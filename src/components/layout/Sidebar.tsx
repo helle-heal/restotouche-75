@@ -45,6 +45,7 @@ const Sidebar = ({ userType }: SidebarProps) => {
   ];
 
   const links = userType === "admin" ? adminLinks : employeeLinks;
+  const loginPath = userType === "admin" ? "/login/admin" : "/login/employee";
 
   return (
     <div className="h-screen w-64 bg-sidebar flex flex-col border-r border-sidebar-border">
@@ -67,7 +68,7 @@ const Sidebar = ({ userType }: SidebarProps) => {
         ))}
       </div>
       <div className="p-4 border-t border-sidebar-border">
-        <Link to="/login" className="sidebar-item text-red-500">
+        <Link to={loginPath} className="sidebar-item text-red-500">
           <LogOut size={20} />
           <span>Déconnexion</span>
         </Link>
