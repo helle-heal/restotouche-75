@@ -11,6 +11,12 @@ import EmployeeLogin from "./pages/auth/EmployeeLogin";
 import KioskMenu from "./pages/client/KioskMenu";
 import MobileMenu from "./pages/client/MobileMenu";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminEmployees from "./pages/admin/AdminEmployees";
+import AdminTasks from "./pages/admin/AdminTasks";
+import AdminSales from "./pages/admin/AdminSales";
+import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminClaims from "./pages/admin/AdminClaims";
+import AdminProfile from "./pages/admin/AdminProfile";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
 import EmployeeAttendance from "./pages/employee/EmployeeAttendance";
 import EmployeeTasks from "./pages/employee/EmployeeTasks";
@@ -41,6 +47,12 @@ const App = () => (
           
           {/* Interface Admin */}
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/employees" element={<AdminEmployees />} />
+          <Route path="/admin/tasks" element={<AdminTasks />} />
+          <Route path="/admin/sales" element={<AdminSales />} />
+          <Route path="/admin/notifications" element={<AdminNotifications />} />
+          <Route path="/admin/claims" element={<AdminClaims />} />
+          <Route path="/admin/profile" element={<AdminProfile />} />
           
           {/* Interface Employé */}
           <Route path="/employee" element={<EmployeeDashboard />} />

@@ -59,11 +59,13 @@ const Sidebar = ({ userType }: SidebarProps) => {
             to={link.path}
             className={cn(
               "sidebar-item",
-              pathname === link.path && "sidebar-item-active"
+              pathname === link.path 
+                ? "sidebar-item-active" 
+                : "text-primary-foreground hover:text-white"
             )}
           >
-            <link.icon size={20} />
-            <span>{link.name}</span>
+            <link.icon size={20} className={pathname === link.path ? "text-white" : "text-primary"} />
+            <span className={pathname === link.path ? "text-white font-medium" : "text-primary-foreground"}>{link.name}</span>
           </Link>
         ))}
       </div>
