@@ -3,16 +3,26 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Beef, Pizza, Salad, Coffee, IceCream, Wine } from "lucide-react";
+import { categories } from "@/data/menuData";
 
-// Catégories fictives
-const categories = [
-  { id: 1, name: "Burgers", icon: Beef },
-  { id: 2, name: "Pizzas", icon: Pizza },
-  { id: 3, name: "Salades", icon: Salad },
-  { id: 4, name: "Desserts", icon: IceCream },
-  { id: 5, name: "Boissons", icon: Coffee },
-  { id: 6, name: "Alcools", icon: Wine },
-];
+const getIconComponent = (iconName: string) => {
+  switch (iconName) {
+    case "Beef":
+      return Beef;
+    case "Pizza":
+      return Pizza;
+    case "Salad":
+      return Salad;
+    case "Coffee":
+      return Coffee;
+    case "IceCream":
+      return IceCream;
+    case "Wine":
+      return Wine;
+    default:
+      return Coffee;
+  }
+};
 
 interface CategoriesProps {
   onCategorySelect: (categoryId: number) => void;
@@ -26,7 +36,7 @@ const Categories = ({ onCategorySelect, selectedCategory }: CategoriesProps) => 
         <h3 className="font-bold mb-3">Catégories</h3>
         <div className="flex flex-col gap-2">
           {categories.map((category) => {
-            const Icon = category.icon;
+            const IconComponent = getIconComponent(category.icon);
             return (
               <Badge
                 key={category.id}
@@ -37,7 +47,7 @@ const Categories = ({ onCategorySelect, selectedCategory }: CategoriesProps) => 
                 }`}
                 onClick={() => onCategorySelect(category.id)}
               >
-                <Icon size={16} className="mr-2" />
+                <IconComponent size={16} className="mr-2" />
                 {category.name}
               </Badge>
             );

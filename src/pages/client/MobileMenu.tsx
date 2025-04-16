@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import EmailForm from "@/components/client/EmailForm";
@@ -16,14 +15,23 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { allProductsList } from "@/data/menuData";
 
 const MobileMenu = () => {
+  const [emailFormCompleted, setEmailFormCompleted] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<number[]>([]);
 
-  const handleEmailSubmit = (email: string) => {
+  const handleEmailSubmit = (email: string | null) => {
     setEmail(email);
+    setEmailFormCompleted(true);
+  };
+
+  const handleSkipEmail = () => {
+    setEmail(null);
+    setEmailFormCompleted(true);
   };
 
   const handleAddToCart = (productId: number) => {
@@ -53,6 +61,15 @@ const MobileMenu = () => {
     toast.success(`${product.name} ajouté au panier`);
   };
 
+  const handleCategorySelect = (categoryId: number) => {
+    setSelectedCategory(categoryId);
+    // Filtrer les produits en fonction de la catégorie
+    const filteredIds = allProductsList
+      .filter(product => product.categoryId === categoryId)
+      .map(product => product.id);
+    setFilteredProducts(filteredIds);
+  };
+
   const handleQuantityChange = (id: number, quantity: number) => {
     if (quantity <= 0) {
       handleRemoveItem(id);
@@ -76,10 +93,10 @@ const MobileMenu = () => {
   // Calculer le nombre total d'articles dans le panier
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
-  if (!email) {
+  if (!emailFormCompleted) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
-        <EmailForm onSubmit={handleEmailSubmit} />
+        <EmailForm onSubmit={handleEmailSubmit} onSkip={handleSkipEmail} />
       </div>
     );
   }
@@ -107,9 +124,7 @@ const MobileMenu = () => {
                 <Logo size="lg" />
               </div>
               <Categories
-                onCategorySelect={(id) => {
-                  setSelectedCategory(id);
-                }}
+                onCategorySelect={handleCategorySelect}
                 selectedCategory={selectedCategory}
               />
               <SheetClose className="sr-only">Close</SheetClose>
@@ -145,12 +160,16 @@ const MobileMenu = () => {
       </header>
 
       <main className="flex-1 container mx-auto p-4 space-y-6">
-        <FeaturedProducts onAddToCart={handleAddToCart} />
+        <FeaturedProducts 
+          onAddToCart={handleAddToCart} 
+          categoryId={selectedCategory}
+          filteredProducts={filteredProducts}
+        />
       </main>
 
       <footer className="bg-white p-4 border-t text-center text-sm text-muted-foreground">
         <div className="container mx-auto">
-          <p>{email}</p>
+          {email && <p>{email}</p>}
           <p>©2025 RestoTouch - Tous droits réservés</p>
         </div>
       </footer>

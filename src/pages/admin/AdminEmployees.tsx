@@ -17,6 +17,20 @@ const employees = [
 ];
 
 const AdminEmployees = () => {
+  // Fonction pour déterminer la variante de badge en fonction du statut
+  const getBadgeVariant = (status: string) => {
+    switch (status) {
+      case "Actif":
+        return "default";
+      case "Congé":
+        return "secondary"; // Changé de "warning" à "secondary" pour correspondre aux variantes disponibles
+      case "Inactif":
+        return "destructive";
+      default:
+        return "default";
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="admin" />
@@ -80,10 +94,7 @@ const AdminEmployees = () => {
                       <TableCell>{employee.role}</TableCell>
                       <TableCell>
                         <Badge 
-                          variant={
-                            employee.status === "Actif" ? "default" :
-                            employee.status === "Congé" ? "warning" : "destructive"
-                          }
+                          variant={getBadgeVariant(employee.status)}
                         >
                           {employee.status}
                         </Badge>

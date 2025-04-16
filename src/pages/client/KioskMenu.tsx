@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,14 +10,23 @@ import Logo from "@/components/layout/Logo";
 import { ArrowLeft, Menu } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { allProductsList } from "@/data/menuData";
 
 const KioskMenu = () => {
+  const [emailFormCompleted, setEmailFormCompleted] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<number[]>([]);
 
-  const handleEmailSubmit = (email: string) => {
+  const handleEmailSubmit = (email: string | null) => {
     setEmail(email);
+    setEmailFormCompleted(true);
+  };
+
+  const handleSkipEmail = () => {
+    setEmail(null);
+    setEmailFormCompleted(true);
   };
 
   const handleAddToCart = (productId: number) => {
@@ -49,6 +57,15 @@ const KioskMenu = () => {
     toast.success(`${product.name} ajouté au panier`);
   };
 
+  const handleCategorySelect = (categoryId: number) => {
+    setSelectedCategory(categoryId);
+    // Filtrer les produits en fonction de la catégorie
+    const filteredIds = allProductsList
+      .filter(product => product.categoryId === categoryId)
+      .map(product => product.id);
+    setFilteredProducts(filteredIds);
+  };
+
   const handleQuantityChange = (id: number, quantity: number) => {
     if (quantity <= 0) {
       handleRemoveItem(id);
@@ -69,10 +86,10 @@ const KioskMenu = () => {
     setCartItems([]);
   };
 
-  if (!email) {
+  if (!emailFormCompleted) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
-        <EmailForm onSubmit={handleEmailSubmit} />
+        <EmailForm onSubmit={handleEmailSubmit} onSkip={handleSkipEmail} />
       </div>
     );
   }
@@ -100,7 +117,7 @@ const KioskMenu = () => {
                 <Logo size="lg" />
               </div>
               <Categories
-                onCategorySelect={setSelectedCategory}
+                onCategorySelect={handleCategorySelect}
                 selectedCategory={selectedCategory}
               />
             </SheetContent>
@@ -111,13 +128,17 @@ const KioskMenu = () => {
       <main className="flex-1 container mx-auto p-4 grid grid-cols-1 md:grid-cols-12 gap-6">
         <div className="hidden md:block md:col-span-3 lg:col-span-2">
           <Categories
-            onCategorySelect={setSelectedCategory}
+            onCategorySelect={handleCategorySelect}
             selectedCategory={selectedCategory}
           />
         </div>
 
         <div className="md:col-span-6 lg:col-span-7 space-y-8">
-          <FeaturedProducts onAddToCart={handleAddToCart} />
+          <FeaturedProducts 
+            onAddToCart={handleAddToCart} 
+            categoryId={selectedCategory}
+            filteredProducts={filteredProducts}
+          />
         </div>
 
         <div className="md:col-span-3 space-y-6">
@@ -133,7 +154,7 @@ const KioskMenu = () => {
 
       <footer className="bg-white p-4 border-t text-center text-sm text-muted-foreground">
         <div className="container mx-auto">
-          <p>{email}</p>
+          {email && <p>{email}</p>}
           <p>©2025 RestoTouch - Tous droits réservés</p>
         </div>
       </footer>
