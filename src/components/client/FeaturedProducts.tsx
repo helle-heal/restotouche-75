@@ -51,7 +51,7 @@ const FeaturedProducts = ({ onAddToCart, categoryId, filteredProducts }: Feature
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-lg">{product.name}</CardTitle>
                   <span className="font-bold text-resto-orange">
-                    {product.price.toFixed(2)} €
+                    {product.price.toFixed(2)} DH
                   </span>
                 </div>
               </CardHeader>

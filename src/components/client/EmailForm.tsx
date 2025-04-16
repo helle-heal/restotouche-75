@@ -23,8 +23,9 @@ const EmailForm = ({ onSubmit, onSkip }: EmailFormProps) => {
     // Simuler un traitement après 1 seconde
     setTimeout(() => {
       setIsLoading(false);
-      onSubmit(email);
-      toast.success("Email enregistré avec succès!");
+      // Important: pass the email even if it's empty
+      onSubmit(email.trim() || null);
+      toast.success(email ? "Email enregistré avec succès!" : "Continuer sans email");
     }, 1000);
   };
 

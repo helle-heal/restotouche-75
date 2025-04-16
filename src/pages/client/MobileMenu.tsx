@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import EmailForm from "@/components/client/EmailForm";
@@ -35,14 +36,8 @@ const MobileMenu = () => {
   };
 
   const handleAddToCart = (productId: number) => {
-    // Simuler l'ajout au panier
-    const sampleProducts = [
-      { id: 1, name: "Burger Classic", price: 8.5 },
-      { id: 2, name: "Pizza Margherita", price: 9.0 },
-      { id: 3, name: "Salade César", price: 7.5 },
-    ];
-
-    const product = sampleProducts.find((p) => p.id === productId);
+    // Trouver le produit dans la liste complète
+    const product = allProductsList.find((p) => p.id === productId);
     if (!product) return;
 
     setCartItems((prev) => {
@@ -54,7 +49,7 @@ const MobileMenu = () => {
             : item
         );
       } else {
-        return [...prev, { ...product, quantity: 1 }];
+        return [...prev, { id: product.id, name: product.name, price: product.price, quantity: 1 }];
       }
     });
 
@@ -169,7 +164,7 @@ const MobileMenu = () => {
 
       <footer className="bg-white p-4 border-t text-center text-sm text-muted-foreground">
         <div className="container mx-auto">
-          {email && <p>{email}</p>}
+          {email && <p>Email: {email}</p>}
           <p>©2025 RestoTouch - Tous droits réservés</p>
         </div>
       </footer>
