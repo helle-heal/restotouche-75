@@ -24,6 +24,7 @@ import EmployeeClaims from "./pages/employee/EmployeeClaims";
 import EmployeeMessages from "./pages/employee/EmployeeMessages";
 import EmployeeProfile from "./pages/employee/EmployeeProfile";
 import AdminProducts from "./pages/admin/AdminProducts";
+import ProductCategoryManager from "./pages/admin/ProductCategoryManager";
 
 const queryClient = new QueryClient();
 
@@ -34,18 +35,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Page d'accueil */}
           <Route path="/" element={<Landing />} />
-          
-          {/* Interface Authentification */}
           <Route path="/login/admin" element={<AdminLogin />} />
           <Route path="/login/employee" element={<EmployeeLogin />} />
-          
-          {/* Interface Client */}
           <Route path="/client/kiosk" element={<KioskMenu />} />
           <Route path="/client/mobile" element={<MobileMenu />} />
-          
-          {/* Interface Admin */}
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/employees" element={<AdminEmployees />} />
           <Route path="/admin/tasks" element={<AdminTasks />} />
@@ -54,17 +48,7 @@ const App = () => (
           <Route path="/admin/claims" element={<AdminClaims />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/products" element={<AdminProducts />} />
-          
-          {/* Interface Employé */}
-          <Route path="/employee" element={<EmployeeDashboard />} />
-          <Route path="/employee/attendance" element={<EmployeeAttendance />} />
-          <Route path="/employee/tasks" element={<EmployeeTasks />} />
-          <Route path="/employee/orders" element={<EmployeeOrders />} />
-          <Route path="/employee/claims" element={<EmployeeClaims />} />
-          <Route path="/employee/messages" element={<EmployeeMessages />} />
-          <Route path="/employee/profile" element={<EmployeeProfile />} />
-          
-          {/* Page 404 */}
+          <Route path="/admin/product-category" element={<ProductCategoryManager />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
