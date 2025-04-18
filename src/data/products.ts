@@ -1,27 +1,5 @@
+import { ProductData } from "@/types/menu";
 
-// Liste des catégories de produits
-export const categories = [
-  { id: 1, name: "Burgers", icon: "Beef" },
-  { id: 2, name: "Pizzas", icon: "Pizza" },
-  { id: 3, name: "Salades", icon: "Salad" },
-  { id: 4, name: "Desserts", icon: "IceCream" },
-  { id: 5, name: "Boissons", icon: "Coffee" },
-  { id: 6, name: "Alcools", icon: "Wine" },
-];
-
-// Interface pour les produits
-export interface ProductData {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  categoryId: number;
-  categoryName: string;
-  popular?: boolean;
-}
-
-// Liste complète des produits
 export const allProductsList: ProductData[] = [
   // Burgers
   {
@@ -204,5 +182,4 @@ export const allProductsList: ProductData[] = [
   },
 ];
 
-// Produits recommandés/populaires
 export const popularProducts = allProductsList.filter(product => product.popular === true);

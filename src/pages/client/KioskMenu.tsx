@@ -10,7 +10,7 @@ import Logo from "@/components/layout/Logo";
 import { ArrowLeft, Menu } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { allProductsList } from "@/data/menuData";
+import { allProductsList } from "@/data";
 
 const KioskMenu = () => {
   const [emailFormCompleted, setEmailFormCompleted] = useState(false);
@@ -30,8 +30,6 @@ const KioskMenu = () => {
   };
 
   const handleAddToCart = (productId: number) => {
-    // Simuler l'ajout au panier
-    // Dans une application réelle, on récupérerait les détails du produit depuis une API
     const sampleProducts = [
       { id: 1, name: "Burger Classic", price: 8.5 },
       { id: 2, name: "Pizza Margherita", price: 9.0 },
@@ -59,7 +57,6 @@ const KioskMenu = () => {
 
   const handleCategorySelect = (categoryId: number) => {
     setSelectedCategory(categoryId);
-    // Filtrer les produits en fonction de la catégorie
     const filteredIds = allProductsList
       .filter(product => product.categoryId === categoryId)
       .map(product => product.id);

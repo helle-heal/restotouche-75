@@ -1,8 +1,10 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import { allProductsList, popularProducts, ProductData } from "@/data/menuData";
+import { allProductsList, popularProducts } from "@/data";
+import { ProductData } from "@/types/menu";
 import ProductDetails from "./ProductDetails";
 
 interface FeaturedProductsProps {

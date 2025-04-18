@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import EmailForm from "@/components/client/EmailForm";
@@ -9,14 +8,9 @@ import Logo from "@/components/layout/Logo";
 import { ArrowLeft, Menu, ShoppingCart } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetClose,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { allProductsList } from "@/data/menuData";
+import { allProductsList } from "@/data";
 
 const MobileMenu = () => {
   const [emailFormCompleted, setEmailFormCompleted] = useState(false);
@@ -36,7 +30,6 @@ const MobileMenu = () => {
   };
 
   const handleAddToCart = (productId: number) => {
-    // Trouver le produit dans la liste complète
     const product = allProductsList.find((p) => p.id === productId);
     if (!product) return;
 
@@ -58,7 +51,6 @@ const MobileMenu = () => {
 
   const handleCategorySelect = (categoryId: number) => {
     setSelectedCategory(categoryId);
-    // Filtrer les produits en fonction de la catégorie
     const filteredIds = allProductsList
       .filter(product => product.categoryId === categoryId)
       .map(product => product.id);
@@ -85,7 +77,6 @@ const MobileMenu = () => {
     setCartItems([]);
   };
 
-  // Calculer le nombre total d'articles dans le panier
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   if (!emailFormCompleted) {

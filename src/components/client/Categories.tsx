@@ -1,9 +1,8 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Beef, Pizza, Salad, Coffee, IceCream, Wine } from "lucide-react";
-import { categories } from "@/data/menuData";
+import { categories } from "@/data";
 
 const getIconComponent = (iconName: string) => {
   switch (iconName) {
