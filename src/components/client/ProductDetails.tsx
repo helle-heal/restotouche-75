@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Minus, Plus, X } from "lucide-react";
-import { ProductData } from "@/data/menuData";
+import { ProductData } from "@/types/menu";
 
 interface ProductDetailsProps {
   product: ProductData | null;
