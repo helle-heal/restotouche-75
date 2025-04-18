@@ -1,9 +1,9 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Plus } from "lucide-react";
+import { Eye } from "lucide-react";
 import { allProductsList, popularProducts, ProductData } from "@/data/menuData";
+import ProductDetails from "./ProductDetails";
 
 interface FeaturedProductsProps {
   onAddToCart: (productId: number) => void;
@@ -12,16 +12,14 @@ interface FeaturedProductsProps {
 }
 
 const FeaturedProducts = ({ onAddToCart, categoryId, filteredProducts }: FeaturedProductsProps) => {
-  // Déterminer quels produits afficher
+  const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
+
   const productsToDisplay = () => {
     if (categoryId && filteredProducts && filteredProducts.length > 0) {
-      // Si une catégorie est sélectionnée et des produits sont filtrés
       return allProductsList.filter(product => filteredProducts.includes(product.id));
     } else if (categoryId) {
-      // Si une catégorie est sélectionnée, mais pas de filtres spécifiques
       return allProductsList.filter(product => product.categoryId === categoryId);
     } else {
-      // Par défaut, afficher les produits populaires
       return popularProducts;
     }
   };
@@ -30,6 +28,10 @@ const FeaturedProducts = ({ onAddToCart, categoryId, filteredProducts }: Feature
   const title = categoryId 
     ? allProductsList.find(p => p.categoryId === categoryId)?.categoryName || "Produits" 
     : "Recommandations";
+
+  const handleAddToCart = (productId: number, options: any) => {
+    onAddToCart(productId);
+  };
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -63,16 +65,23 @@ const FeaturedProducts = ({ onAddToCart, categoryId, filteredProducts }: Feature
               <CardFooter>
                 <Button
                   className="w-full"
-                  onClick={() => onAddToCart(product.id)}
+                  onClick={() => setSelectedProduct(product)}
                 >
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  Ajouter au panier
+                  <Eye className="mr-2 h-4 w-4" />
+                  Voir détails
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       )}
+
+      <ProductDetails
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onAddToCart={handleAddToCart}
+      />
     </div>
   );
 };
