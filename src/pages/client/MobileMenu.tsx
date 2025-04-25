@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import EmailForm from "@/components/client/EmailForm";
 import Categories from "@/components/client/Categories";
@@ -8,6 +7,8 @@ import { allProductsList } from "@/data";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import PaymentModal from "@/components/client/PaymentModal";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
 const MobileMenu = () => {
   const [emailStep, setEmailStep] = useState(true);
@@ -15,15 +16,11 @@ const MobileMenu = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleEmailSubmit = (email: string | null) => {
+  const handleEmailSubmit = (email: string) => {
     setClientEmail(email);
     setEmailStep(false);
-  };
-
-  const handleEmailSkip = () => {
-    setEmailStep(false);
-    setClientEmail(null);
   };
 
   const handleCategorySelect = (categoryId: number) => {
@@ -96,51 +93,52 @@ const MobileMenu = () => {
   if (emailStep) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <EmailForm onSubmit={handleEmailSubmit} onSkip={handleEmailSkip} />
+        <EmailForm onSubmit={handleEmailSubmit} />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto p-4">
-        <div className="sticky top-0 z-10 bg-white p-4 rounded-lg shadow-sm mb-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">RestoTouch</h2>
-            {clientEmail ? (
-              <p className="text-sm text-muted-foreground">
-                Email: {clientEmail}
-              </p>
-            ) : (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setEmailStep(true)}
-              >
-                Ajouter email
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b p-4">
+        <div className="flex items-center justify-between">
+          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
               </Button>
-            )}
-          </div>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+              <div className="py-6">
+                <Categories
+                  onCategorySelect={handleCategorySelect}
+                  selectedCategory={selectedCategory}
+                />
+                <div className="mt-4">
+                  <Cart
+                    items={cartItems}
+                    onQuantityChange={handleQuantityChange}
+                    onRemoveItem={handleRemoveItem}
+                    onCheckout={handleCheckout}
+                  />
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+          <h2 className="text-xl font-bold">RestoTouch</h2>
+          {clientEmail && (
+            <p className="text-sm text-muted-foreground">
+              {clientEmail}
+            </p>
+          )}
         </div>
+      </div>
 
-        <Categories
-          onCategorySelect={handleCategorySelect}
-          selectedCategory={selectedCategory}
-        />
-
+      <div className="pt-20 p-4">
         <div className="my-6">
           <FeaturedProducts
             onAddToCart={handleAddToCart}
             categoryId={selectedCategory}
-          />
-        </div>
-
-        <div className="sticky bottom-4 z-10">
-          <Cart
-            items={cartItems}
-            onQuantityChange={handleQuantityChange}
-            onRemoveItem={handleRemoveItem}
-            onCheckout={handleCheckout}
           />
         </div>
       </div>

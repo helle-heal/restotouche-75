@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,14 @@ interface CategoriesProps {
   selectedCategory: number | null;
 }
 
+const categoryColors: { [key: number]: string } = {
+  1: "bg-[#9b87f5] hover:bg-[#7E69AB]",
+  2: "bg-[#F97316] hover:bg-[#ea6506]",
+  3: "bg-[#0EA5E9] hover:bg-[#0284c7]",
+  4: "bg-[#D946EF] hover:bg-[#c026d3]",
+  5: "bg-[#8B5CF6] hover:bg-[#7c3aed]"
+};
+
 const Categories = ({ onCategorySelect, selectedCategory }: CategoriesProps) => {
   return (
     <Card className="animate-fade-in">
@@ -39,11 +48,10 @@ const Categories = ({ onCategorySelect, selectedCategory }: CategoriesProps) => 
             return (
               <Badge
                 key={category.id}
-                className={`cursor-pointer flex items-center justify-start p-2 hover:bg-resto-orange/80 ${
-                  selectedCategory === category.id
-                    ? "bg-resto-orange"
-                    : "bg-secondary"
-                }`}
+                className={`cursor-pointer flex items-center justify-start p-2 
+                  ${selectedCategory === category.id 
+                    ? categoryColors[category.id] 
+                    : "bg-secondary hover:bg-secondary/80"}`}
                 onClick={() => onCategorySelect(category.id)}
               >
                 <IconComponent size={16} className="mr-2" />
