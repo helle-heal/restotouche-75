@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import EmailForm from "@/components/client/EmailForm";
 import Categories from "@/components/client/Categories";
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import PaymentModal from "@/components/client/PaymentModal";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, ShoppingCart } from "lucide-react";
 
 const MobileMenu = () => {
   const [emailStep, setEmailStep] = useState(true);
@@ -102,7 +103,7 @@ const MobileMenu = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b p-4">
         <div className="flex items-center justify-between">
-          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
@@ -114,23 +115,29 @@ const MobileMenu = () => {
                   onCategorySelect={handleCategorySelect}
                   selectedCategory={selectedCategory}
                 />
-                <div className="mt-4">
-                  <Cart
-                    items={cartItems}
-                    onQuantityChange={handleQuantityChange}
-                    onRemoveItem={handleRemoveItem}
-                    onCheckout={handleCheckout}
-                  />
-                </div>
               </div>
             </SheetContent>
           </Sheet>
+
           <h2 className="text-xl font-bold">RestoTouch</h2>
-          {clientEmail && (
-            <p className="text-sm text-muted-foreground">
-              {clientEmail}
-            </p>
-          )}
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <div className="py-6">
+                <Cart
+                  items={cartItems}
+                  onQuantityChange={handleQuantityChange}
+                  onRemoveItem={handleRemoveItem}
+                  onCheckout={handleCheckout}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
@@ -149,6 +156,7 @@ const MobileMenu = () => {
         onPaymentComplete={handlePaymentComplete}
         cartItems={cartItems}
         customerEmail={clientEmail}
+        isMobileMenu={true}
       />
     </div>
   );
