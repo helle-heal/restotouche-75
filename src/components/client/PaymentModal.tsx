@@ -63,7 +63,7 @@ const PaymentModal = ({
         // Simulate online payment processing
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        if (!data) {
+        if (!form.getValues().cardNumber && !data) {
           throw new Error("Données de carte manquantes");
         }
       }
@@ -146,72 +146,86 @@ const PaymentModal = ({
           
           <TabsContent value="card">
             {isMobileMenu ? (
-              <form onSubmit={form.handleSubmit(handlePaymentSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="cardNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Numéro de carte</FormLabel>
-                      <FormControl>
-                        <Input placeholder="1234 5678 9012 3456" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handlePaymentSubmit)} className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="expiryDate"
+                    name="cardNumber"
+                    rules={{ required: "Le numéro de carte est requis" }}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Date d'expiration</FormLabel>
+                        <FormLabel>Numéro de carte</FormLabel>
                         <FormControl>
-                          <Input placeholder="MM/YY" {...field} />
+                          <Input placeholder="1234 5678 9012 3456" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="cvv"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>CVV</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="expiryDate"
+                      rules={{ required: "La date d'expiration est requise" }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Date d'expiration</FormLabel>
+                          <FormControl>
+                            <Input placeholder="MM/YY" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="cardName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nom sur la carte</FormLabel>
-                      <FormControl>
-                        <Input placeholder="JEAN DUPONT" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold">Total à payer:</span>
-                    <span className="text-lg font-bold">{totalAmount.toFixed(2)} DH</span>
+                    <FormField
+                      control={form.control}
+                      name="cvv"
+                      rules={{ required: "Le code CVV est requis" }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>CVV</FormLabel>
+                          <FormControl>
+                            <Input placeholder="123" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                </div>
-              </form>
+
+                  <FormField
+                    control={form.control}
+                    name="cardName"
+                    rules={{ required: "Le nom sur la carte est requis" }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom sur la carte</FormLabel>
+                        <FormControl>
+                          <Input placeholder="JEAN DUPONT" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Total à payer:</span>
+                      <span className="text-lg font-bold">{totalAmount.toFixed(2)} DH</span>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full"
+                    disabled={processingPayment}
+                  >
+                    {processingPayment ? "Traitement..." : "Payer en ligne"}
+                  </Button>
+                </form>
+              </Form>
             ) : (
               <div className="space-y-4">
                 <div className="p-4 bg-gray-50 rounded-lg">
@@ -239,15 +253,19 @@ const PaymentModal = ({
         </Tabs>
         
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Annuler
-          </Button>
-          <Button 
-            onClick={() => handlePaymentSubmit()}
-            disabled={processingPayment}
-          >
-            {processingPayment ? "Traitement..." : "Payer"}
-          </Button>
+          {(!isMobileMenu || paymentTab === "cash") && (
+            <>
+              <Button variant="outline" onClick={onClose}>
+                Annuler
+              </Button>
+              <Button 
+                onClick={() => handlePaymentSubmit()}
+                disabled={processingPayment}
+              >
+                {processingPayment ? "Traitement..." : "Payer"}
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
