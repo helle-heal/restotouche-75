@@ -1,60 +1,62 @@
+
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import EmailForm from "@/components/client/EmailForm";
 import Categories from "@/components/client/Categories";
 import FeaturedProducts from "@/components/client/FeaturedProducts";
 import Cart, { CartItem } from "@/components/client/Cart";
-import Logo from "@/components/layout/Logo";
-import { ArrowLeft, Menu, ShoppingCart } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
 import { allProductsList } from "@/data";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/sonner";
+import PaymentModal from "@/components/client/PaymentModal";
 
 const MobileMenu = () => {
-  const [emailFormCompleted, setEmailFormCompleted] = useState(false);
-  const [email, setEmail] = useState<string | null>(null);
+  const [emailStep, setEmailStep] = useState(true);
+  const [clientEmail, setClientEmail] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<number[]>([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const handleEmailSubmit = (email: string | null) => {
-    setEmail(email);
-    setEmailFormCompleted(true);
+    setClientEmail(email);
+    setEmailStep(false);
   };
 
-  const handleSkipEmail = () => {
-    setEmail(null);
-    setEmailFormCompleted(true);
+  const handleEmailSkip = () => {
+    setEmailStep(false);
+    setClientEmail(null);
+  };
+
+  const handleCategorySelect = (categoryId: number) => {
+    setSelectedCategory(categoryId);
   };
 
   const handleAddToCart = (productId: number) => {
     const product = allProductsList.find((p) => p.id === productId);
     if (!product) return;
 
-    setCartItems((prev) => {
-      const existingItem = prev.find((item) => item.id === productId);
-      if (existingItem) {
-        return prev.map((item) =>
+    const existingItem = cartItems.find((item) => item.id === productId);
+
+    if (existingItem) {
+      setCartItems(
+        cartItems.map((item) =>
           item.id === productId
             ? { ...item, quantity: item.quantity + 1 }
             : item
-        );
-      } else {
-        return [...prev, { id: product.id, name: product.name, price: product.price, quantity: 1 }];
-      }
-    });
-
-    toast.success(`${product.name} ajouté au panier`);
-  };
-
-  const handleCategorySelect = (categoryId: number) => {
-    setSelectedCategory(categoryId);
-    const filteredIds = allProductsList
-      .filter(product => product.categoryId === categoryId)
-      .map(product => product.id);
-    setFilteredProducts(filteredIds);
+        )
+      );
+      toast.success(`${product.name} ajouté (${existingItem.quantity + 1})`);
+    } else {
+      setCartItems([
+        ...cartItems,
+        {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1,
+        },
+      ]);
+      toast.success(`${product.name} ajouté au panier`);
+    }
   };
 
   const handleQuantityChange = (id: number, quantity: number) => {
@@ -62,103 +64,94 @@ const MobileMenu = () => {
       handleRemoveItem(id);
       return;
     }
-
-    setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, quantity: quantity } : item
+      )
     );
   };
 
   const handleRemoveItem = (id: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    const itemToRemove = cartItems.find((item) => item.id === id);
+    if (itemToRemove) {
+      setCartItems(cartItems.filter((item) => item.id !== id));
+      toast.info(`${itemToRemove.name} retiré du panier`);
+    }
   };
 
   const handleCheckout = () => {
-    toast.success("Commande confirmée ! Un e-mail de confirmation vous a été envoyé.");
+    if (cartItems.length === 0) {
+      toast.error("Votre panier est vide");
+      return;
+    }
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentComplete = (paymentMethod: string) => {
+    setShowPaymentModal(false);
+    toast.success(`Paiement par ${paymentMethod} effectué avec succès!`);
     setCartItems([]);
   };
 
-  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-
-  if (!emailFormCompleted) {
+  if (emailStep) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
-        <EmailForm onSubmit={handleEmailSubmit} onSkip={handleSkipEmail} />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <EmailForm onSubmit={handleEmailSubmit} onSkip={handleEmailSkip} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="bg-white p-4 shadow-sm flex justify-between items-center sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          <Link to="/">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <Logo />
-        </div>
-        <div className="flex items-center gap-2">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Menu className="h-5 w-5" />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto p-4">
+        <div className="sticky top-0 z-10 bg-white p-4 rounded-lg shadow-sm mb-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold">RestoTouch</h2>
+            {clientEmail ? (
+              <p className="text-sm text-muted-foreground">
+                Email: {clientEmail}
+              </p>
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setEmailStep(true)}
+              >
+                Ajouter email
               </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <div className="py-4">
-                <Logo size="lg" />
-              </div>
-              <Categories
-                onCategorySelect={handleCategorySelect}
-                selectedCategory={selectedCategory}
-              />
-              <SheetClose className="sr-only">Close</SheetClose>
-            </SheetContent>
-          </Sheet>
-
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                {cartItemCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center">
-                    {cartItemCount}
-                  </Badge>
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <div className="h-full flex flex-col">
-                <div className="flex-1 overflow-auto pt-4">
-                  <Cart
-                    items={cartItems}
-                    onQuantityChange={handleQuantityChange}
-                    onRemoveItem={handleRemoveItem}
-                    onCheckout={handleCheckout}
-                  />
-                </div>
-              </div>
-              <SheetClose className="sr-only">Close</SheetClose>
-            </SheetContent>
-          </Sheet>
+            )}
+          </div>
         </div>
-      </header>
 
-      <main className="flex-1 container mx-auto p-4 space-y-6">
-        <FeaturedProducts 
-          onAddToCart={handleAddToCart} 
-          categoryId={selectedCategory}
-          filteredProducts={filteredProducts}
+        <Categories
+          onCategorySelect={handleCategorySelect}
+          selectedCategory={selectedCategory}
         />
-      </main>
 
-      <footer className="bg-white p-4 border-t text-center text-sm text-muted-foreground">
-        <div className="container mx-auto">
-          {email && <p>Email: {email}</p>}
-          <p>©2025 RestoTouch - Tous droits réservés</p>
+        <div className="my-6">
+          <FeaturedProducts
+            onAddToCart={handleAddToCart}
+            categoryId={selectedCategory}
+          />
         </div>
-      </footer>
+
+        <div className="sticky bottom-4 z-10">
+          <Cart
+            items={cartItems}
+            onQuantityChange={handleQuantityChange}
+            onRemoveItem={handleRemoveItem}
+            onCheckout={handleCheckout}
+          />
+        </div>
+      </div>
+
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onPaymentComplete={handlePaymentComplete}
+        cartItems={cartItems}
+        customerEmail={clientEmail}
+      />
     </div>
   );
 };
