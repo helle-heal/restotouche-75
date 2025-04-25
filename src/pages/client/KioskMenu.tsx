@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import EmailForm from "@/components/client/EmailForm";
 import Categories from "@/components/client/Categories";
@@ -17,7 +16,7 @@ const KioskMenu = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  const handleEmailSubmit = (email: string | null) => {
+  const handleEmailSubmit = (email: string) => {
     setClientEmail(email);
     setEmailStep(false);
   };
@@ -38,7 +37,6 @@ const KioskMenu = () => {
     const existingItem = cartItems.find((item) => item.id === productId);
 
     if (existingItem) {
-      // Si le produit existe déjà, augmenter la quantité
       setCartItems(
         cartItems.map((item) =>
           item.id === productId
@@ -48,7 +46,6 @@ const KioskMenu = () => {
       );
       toast.success(`${product.name} ajouté (${existingItem.quantity + 1})`);
     } else {
-      // Sinon, ajouter un nouveau produit
       setCartItems([
         ...cartItems,
         {
@@ -99,7 +96,11 @@ const KioskMenu = () => {
   if (emailStep) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <EmailForm onSubmit={handleEmailSubmit} onSkip={handleEmailSkip} />
+        <EmailForm 
+          onSubmit={handleEmailSubmit} 
+          onSkip={handleEmailSkip}
+          showSkipButton={true}
+        />
       </div>
     );
   }
@@ -108,7 +109,6 @@ const KioskMenu = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar avec catégories et panier */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
               <h2 className="text-xl font-bold mb-2">Bienvenue</h2>
@@ -142,7 +142,6 @@ const KioskMenu = () => {
             <QRCode />
           </div>
 
-          {/* Contenu principal */}
           <div className="lg:col-span-3">
             <FeaturedProducts
               onAddToCart={handleAddToCart}

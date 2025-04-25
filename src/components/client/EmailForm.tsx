@@ -9,9 +9,11 @@ import Logo from "../layout/Logo";
 
 interface EmailFormProps {
   onSubmit: (email: string) => void;
+  onSkip?: () => void;
+  showSkipButton?: boolean;
 }
 
-const EmailForm = ({ onSubmit }: EmailFormProps) => {
+const EmailForm = ({ onSubmit, onSkip, showSkipButton = false }: EmailFormProps) => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,9 +55,21 @@ const EmailForm = ({ onSubmit }: EmailFormProps) => {
               Nous vous enverrons votre facture et le statut de votre commande à cette adresse.
             </p>
           </div>
-          <Button type="submit" className="w-full btn-primary" disabled={isLoading}>
-            {isLoading ? "Traitement en cours..." : "Continuer"}
-          </Button>
+          <div className="space-y-2">
+            <Button type="submit" className="w-full btn-primary" disabled={isLoading}>
+              {isLoading ? "Traitement en cours..." : "Continuer"}
+            </Button>
+            {showSkipButton && onSkip && (
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full" 
+                onClick={onSkip}
+              >
+                Passer cette étape
+              </Button>
+            )}
+          </div>
         </form>
       </CardContent>
     </Card>
