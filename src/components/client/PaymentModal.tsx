@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { CartItem } from "@/components/client/Cart";
-import { Cash, CreditCard, FileText, Receipt } from "lucide-react";
+import { DollarSign, CreditCard, FileText, Receipt } from "lucide-react";
 import InvoicePreview from "@/components/client/InvoicePreview";
 
 interface PaymentModalProps {
@@ -66,7 +66,7 @@ const PaymentModal = ({
             <Tabs defaultValue="cash" className="w-full" value={paymentTab} onValueChange={setPaymentTab}>
               <TabsList className="grid grid-cols-2 mb-4">
                 <TabsTrigger value="cash" className="flex items-center gap-2">
-                  <Cash className="h-4 w-4" />
+                  <DollarSign className="h-4 w-4" />
                   Espèces
                 </TabsTrigger>
                 <TabsTrigger value="card" className="flex items-center gap-2">

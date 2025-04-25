@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Receipt, Cash, CreditCard } from "lucide-react";
+import { Receipt, DollarSign, CreditCard } from "lucide-react";
 import { CartItem } from "@/components/client/Cart";
 import { DialogTitle, DialogHeader } from "@/components/ui/dialog";
 
@@ -62,7 +62,7 @@ const InvoicePreview = ({
             <span className="flex items-center gap-1">
               {paymentMethod === "cash" ? (
                 <>
-                  <Cash className="h-4 w-4" /> Espèces
+                  <DollarSign className="h-4 w-4" /> Espèces
                 </>
               ) : (
                 <>
