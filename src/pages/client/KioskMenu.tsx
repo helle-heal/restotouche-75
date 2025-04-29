@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import EmailForm from "@/components/client/EmailForm";
 import Categories from "@/components/client/Categories";
@@ -8,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import QRCode from "@/components/client/QRCode";
 import PaymentModal from "@/components/client/PaymentModal";
+import { QrCode } from "lucide-react";
+import Logo from "@/components/layout/Logo";
 
 const KioskMenu = () => {
   const [emailStep, setEmailStep] = useState(true);
@@ -15,6 +18,7 @@ const KioskMenu = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
 
   const handleEmailSubmit = (email: string) => {
     setClientEmail(email);
@@ -107,6 +111,22 @@ const KioskMenu = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header avec logo et bouton QR */}
+      <div className="bg-white p-4 shadow-sm">
+        <div className="container mx-auto flex justify-between items-center">
+          <Logo />
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => setShowQRCode(true)}
+            className="rounded-full"
+            aria-label="Afficher le code QR"
+          >
+            <QrCode className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-1 space-y-6">
@@ -139,7 +159,6 @@ const KioskMenu = () => {
               onRemoveItem={handleRemoveItem}
               onCheckout={handleCheckout}
             />
-            <QRCode />
           </div>
 
           <div className="lg:col-span-3">
@@ -150,6 +169,11 @@ const KioskMenu = () => {
           </div>
         </div>
       </div>
+
+      <QRCode 
+        isOpen={showQRCode} 
+        onClose={() => setShowQRCode(false)}
+      />
 
       <PaymentModal
         isOpen={showPaymentModal}
