@@ -1,10 +1,11 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { CheckCircle, AlertCircle, Clock, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 // Types pour les tâches
@@ -22,6 +23,7 @@ interface Task {
 }
 
 const EmployeeTasks = () => {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: "1",
@@ -68,6 +70,12 @@ const EmployeeTasks = () => {
     toast.success("Tâche marquée comme terminée");
   };
 
+  // Fonction pour retourner au tableau de bord
+  const goToDashboard = () => {
+    navigate("/employee");
+    toast.info("Retour au tableau de bord");
+  };
+
   // Couleurs selon priorité
   const priorityColors = {
     haute: "bg-red-100 text-red-800",
@@ -84,8 +92,12 @@ const EmployeeTasks = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="employee" />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white shadow-sm px-6 py-4">
+        <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Mes Tâches</h1>
+          <Button variant="outline" size="sm" onClick={goToDashboard}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Retour au Dashboard
+          </Button>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
           <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">

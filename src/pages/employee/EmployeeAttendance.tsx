@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +8,7 @@ import { toast } from "sonner";
 import { Clock, Calendar } from "lucide-react";
 
 const EmployeeAttendance = () => {
+  const navigate = useNavigate();
   const [status, setStatus] = useState("present"); // present, absent
   const [clockInTime, setClockInTime] = useState("08:30");
   const [clockOutTime, setClockOutTime] = useState("");
@@ -33,6 +35,11 @@ const EmployeeAttendance = () => {
     }, ...prev]);
     
     toast.success("Pointage de sortie enregistré avec succès");
+    
+    // Rediriger vers le tableau de bord
+    setTimeout(() => {
+      navigate("/employee");
+    }, 1500);
   };
 
   const handleClockIn = () => {
@@ -45,6 +52,11 @@ const EmployeeAttendance = () => {
     setStatus("present");
     
     toast.success("Pointage d'entrée enregistré avec succès");
+  };
+
+  const handleBackToDashboard = () => {
+    navigate("/employee");
+    toast.info("Retour au tableau de bord");
   };
 
   return (
@@ -88,6 +100,14 @@ const EmployeeAttendance = () => {
                     </Button>
                   </>
                 )}
+                
+                <Button 
+                  variant="outline" 
+                  className="mt-3 w-full" 
+                  onClick={handleBackToDashboard}
+                >
+                  Retour au tableau de bord
+                </Button>
               </CardContent>
             </Card>
             

@@ -1,5 +1,6 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +12,36 @@ import {
   CheckCircle,
   ShoppingCart,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const EmployeeDashboard = () => {
+  const navigate = useNavigate();
+
+  const handleViewTasks = () => {
+    navigate("/employee/tasks");
+    toast.info("Navigation vers les tâches");
+  };
+
+  const handleViewOrders = () => {
+    navigate("/employee/orders");
+    toast.info("Navigation vers les commandes");
+  };
+
+  const handleViewNotifications = () => {
+    navigate("/employee/messages");
+    toast.info("Navigation vers les notifications");
+  };
+
+  const handleCheckOut = () => {
+    navigate("/employee/attendance");
+    toast.success("Redirection vers la page de pointage");
+  };
+
+  const handleClaimReport = () => {
+    navigate("/employee/claims");
+    toast.info("Signalement d'une réclamation");
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="employee" />
@@ -37,7 +66,9 @@ const EmployeeDashboard = () => {
                 <p className="text-xs text-muted-foreground mt-1">
                   Arrivée: 08:30 - Aujourd'hui
                 </p>
-                <Button className="mt-4 w-full">Signaler départ</Button>
+                <Button className="mt-4 w-full" onClick={handleCheckOut}>
+                  Signaler départ
+                </Button>
               </CardContent>
             </Card>
             <Card>
@@ -52,7 +83,7 @@ const EmployeeDashboard = () => {
                 <p className="text-xs text-muted-foreground">
                   2 prioritaires, 1 standard
                 </p>
-                <Button variant="outline" className="mt-4 w-full">
+                <Button variant="outline" className="mt-4 w-full" onClick={handleViewTasks}>
                   Voir les tâches
                 </Button>
               </CardContent>
@@ -69,7 +100,7 @@ const EmployeeDashboard = () => {
                 <p className="text-xs text-muted-foreground">
                   Dernière: il y a 3 min
                 </p>
-                <Button variant="outline" className="mt-4 w-full">
+                <Button variant="outline" className="mt-4 w-full" onClick={handleViewOrders}>
                   Voir les commandes
                 </Button>
               </CardContent>
@@ -86,7 +117,7 @@ const EmployeeDashboard = () => {
                 <p className="text-xs text-muted-foreground">
                   1 nouvelle tâche assignée
                 </p>
-                <Button variant="outline" className="mt-4 w-full text-xs">
+                <Button variant="outline" className="mt-4 w-full text-xs" onClick={handleViewNotifications}>
                   Voir toutes les notifications
                 </Button>
               </CardContent>
@@ -103,7 +134,7 @@ const EmployeeDashboard = () => {
                 <p className="text-xs text-muted-foreground">
                   Réponse à votre réclamation
                 </p>
-                <Button variant="outline" className="mt-4 w-full">
+                <Button variant="outline" className="mt-4 w-full" onClick={handleViewNotifications}>
                   Voir les messages
                 </Button>
               </CardContent>
@@ -113,9 +144,15 @@ const EmployeeDashboard = () => {
           <div className="mt-6">
             <h2 className="text-lg font-bold mb-4">Actions rapides</h2>
             <div className="flex flex-wrap gap-4">
-              <Button className="btn-primary">Signaler une réclamation</Button>
-              <Button className="btn-secondary">Voir mes tâches</Button>
-              <Button variant="outline">Consulter les commandes</Button>
+              <Button className="btn-primary" onClick={handleClaimReport}>
+                Signaler une réclamation
+              </Button>
+              <Button className="btn-secondary" onClick={handleViewTasks}>
+                Voir mes tâches
+              </Button>
+              <Button variant="outline" onClick={handleViewOrders}>
+                Consulter les commandes
+              </Button>
             </div>
           </div>
         </main>
