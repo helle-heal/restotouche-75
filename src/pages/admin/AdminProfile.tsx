@@ -1,227 +1,242 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Camera, Key, Lock, Mail, Settings, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  User,
-  Mail,
-  Phone,
-  Lock,
-  Calendar,
-  Clock,
-  Settings,
-  Bell,
-  Shield,
-} from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/sonner";
 
 const AdminProfile = () => {
+  const navigate = useNavigate();
+  const [profileImage, setProfileImage] = useState("/avatar.png");
+  
+  // Information du profil
+  const [profileInfo, setProfileInfo] = useState({
+    firstName: "Admin",
+    lastName: "Restouch",
+    email: "admin@restouch.com",
+    phone: "+212 5 22 33 44 55",
+    role: "Administrateur"
+  });
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
+  const handleBack = () => {
+    navigate("/admin");
+  };
+
+  const handleProfileUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Profil mis à jour avec succès");
+  };
+
+  const handlePasswordChange = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas");
+      return;
+    }
+    
+    toast.success("Mot de passe modifié avec succès");
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    });
+  };
+
+  const handlePasswordFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordForm({
+      ...passwordForm,
+      [e.target.name]: e.target.value
+    });
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="admin" />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white shadow-sm px-6 py-4">
+        <header className="bg-white shadow-sm px-6 py-4 flex items-center">
+          <Button 
+            variant="ghost" 
+            className="p-2 mr-4" 
+            onClick={handleBack}
+          >
+            <ArrowLeft size={20} />
+          </Button>
           <h1 className="text-2xl font-bold">Mon Profil</h1>
         </header>
+
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="mb-6 flex items-center">
-            <div className="bg-gray-200 w-24 h-24 rounded-full flex items-center justify-center mr-6">
-              <User size={40} className="text-gray-500" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold">Alexandre Martin</h2>
-              <p className="text-muted-foreground">Directeur</p>
-              <div className="flex items-center gap-2 mt-2">
-                <Badge>Admin</Badge>
-                <Badge variant="outline">Depuis 2022</Badge>
+          <div className="max-w-3xl mx-auto">
+            <div className="flex items-center gap-6 mb-8">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
+                  <img 
+                    src={profileImage || "https://via.placeholder.com/150"} 
+                    alt="Photo de profil" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <Button 
+                  size="icon" 
+                  className="absolute bottom-0 right-0 w-8 h-8 rounded-full"
+                  onClick={() => toast.info("Fonctionnalité à venir")}
+                >
+                  <Camera size={14} />
+                </Button>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">{profileInfo.firstName} {profileInfo.lastName}</h2>
+                <p className="text-muted-foreground">{profileInfo.role}</p>
               </div>
             </div>
-            <div className="ml-auto">
-              <Button className="btn-primary">Modifier la photo</Button>
-            </div>
-          </div>
 
-          <Tabs defaultValue="info" className="w-full">
-            <TabsList className="mb-4">
-              <TabsTrigger value="info">Informations personnelles</TabsTrigger>
-              <TabsTrigger value="security">Sécurité</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-              <TabsTrigger value="activities">Activités récentes</TabsTrigger>
-            </TabsList>
-            <TabsContent value="info">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Informations personnelles</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="firstName" className="text-sm font-medium">Prénom</label>
-                      <Input id="firstName" defaultValue="Alexandre" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="lastName" className="text-sm font-medium">Nom</label>
-                      <Input id="lastName" defaultValue="Martin" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium">Email</label>
-                      <Input id="email" type="email" defaultValue="alexandre.martin@example.com" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="phone" className="text-sm font-medium">Téléphone</label>
-                      <Input id="phone" defaultValue="06 12 34 56 78" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="position" className="text-sm font-medium">Poste</label>
-                      <Input id="position" defaultValue="Directeur" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="startDate" className="text-sm font-medium">Date d'embauche</label>
-                      <Input id="startDate" defaultValue="15/03/2022" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="bio" className="text-sm font-medium">Biographie</label>
-                    <Textarea 
-                      id="bio" 
-                      rows={4}
-                      defaultValue="Directeur du restaurant depuis mars 2022. Plus de 10 ans d'expérience dans la restauration. Spécialiste en gestion d'équipe et optimisation des processus."
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline">Annuler</Button>
-                    <Button className="btn-primary">Sauvegarder les modifications</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="security">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sécurité du compte</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="currentPassword" className="text-sm font-medium">Mot de passe actuel</label>
-                    <Input id="currentPassword" type="password" />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="newPassword" className="text-sm font-medium">Nouveau mot de passe</label>
-                    <Input id="newPassword" type="password" />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="confirmPassword" className="text-sm font-medium">Confirmer le mot de passe</label>
-                    <Input id="confirmPassword" type="password" />
-                  </div>
-                  <div className="pt-4">
-                    <h3 className="text-base font-medium mb-2">Connexions récentes</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 border rounded-md">
-                        <div className="flex items-center gap-3">
-                          <Shield className="text-green-500" />
-                          <div>
-                            <div className="font-medium">Paris, France</div>
-                            <div className="text-sm text-muted-foreground">Aujourd'hui à 10:45</div>
-                          </div>
+            <Tabs defaultValue="info">
+              <TabsList className="mb-6">
+                <TabsTrigger value="info" className="flex items-center gap-2">
+                  <User size={16} />
+                  Informations
+                </TabsTrigger>
+                <TabsTrigger value="security" className="flex items-center gap-2">
+                  <Lock size={16} />
+                  Sécurité
+                </TabsTrigger>
+                <TabsTrigger value="preferences" className="flex items-center gap-2">
+                  <Settings size={16} />
+                  Préférences
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="info">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Informations personnelles</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleProfileUpdate} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="firstName">Prénom</Label>
+                          <Input 
+                            id="firstName"
+                            value={profileInfo.firstName}
+                            onChange={(e) => setProfileInfo({...profileInfo, firstName: e.target.value})}
+                          />
                         </div>
-                        <Badge variant="outline" className="bg-green-50">Cet appareil</Badge>
-                      </div>
-                      <div className="flex items-center justify-between p-3 border rounded-md">
-                        <div className="flex items-center gap-3">
-                          <Shield className="text-green-500" />
-                          <div>
-                            <div className="font-medium">Lyon, France</div>
-                            <div className="text-sm text-muted-foreground">Hier à 18:30</div>
-                          </div>
-                        </div>
-                        <Button variant="ghost" size="sm">Déconnecter</Button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline">Annuler</Button>
-                    <Button className="btn-primary">Mettre à jour le mot de passe</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="notifications">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Préférences de notifications</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 border rounded-md">
-                      <div className="flex items-center gap-3">
-                        <Bell className="text-primary" />
-                        <div>
-                          <div className="font-medium">Notifications email</div>
-                          <div className="text-sm text-muted-foreground">Recevoir des notifications par email</div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lastName">Nom</Label>
+                          <Input 
+                            id="lastName"
+                            value={profileInfo.lastName}
+                            onChange={(e) => setProfileInfo({...profileInfo, lastName: e.target.value})}
+                          />
                         </div>
                       </div>
-                      <Button variant="outline">Activé</Button>
-                    </div>
-                    <div className="flex items-center justify-between p-3 border rounded-md">
-                      <div className="flex items-center gap-3">
-                        <Bell className="text-primary" />
-                        <div>
-                          <div className="font-medium">Notifications dans l'application</div>
-                          <div className="text-sm text-muted-foreground">Recevoir des notifications dans l'application</div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            id="email"
+                            type="email"
+                            className="pl-9"
+                            value={profileInfo.email}
+                            onChange={(e) => setProfileInfo({...profileInfo, email: e.target.value})}
+                          />
                         </div>
                       </div>
-                      <Button variant="outline">Activé</Button>
-                    </div>
-                    <div className="flex items-center justify-between p-3 border rounded-md">
-                      <div className="flex items-center gap-3">
-                        <Bell className="text-primary" />
-                        <div>
-                          <div className="font-medium">Notifications SMS</div>
-                          <div className="text-sm text-muted-foreground">Recevoir des notifications par SMS</div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Téléphone</Label>
+                        <Input 
+                          id="phone"
+                          value={profileInfo.phone}
+                          onChange={(e) => setProfileInfo({...profileInfo, phone: e.target.value})}
+                        />
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="submit">Enregistrer les modifications</Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="security">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Changer le mot de passe</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handlePasswordChange} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+                        <div className="relative">
+                          <Key className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            id="currentPassword"
+                            name="currentPassword"
+                            type="password"
+                            className="pl-9"
+                            value={passwordForm.currentPassword}
+                            onChange={handlePasswordFormChange}
+                            required
+                          />
                         </div>
                       </div>
-                      <Button variant="outline">Désactivé</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="activities">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Activités récentes</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-5">
-                    {[
-                      { icon: User, text: "Vous avez mis à jour votre profil", time: "Aujourd'hui, 11:30" },
-                      { icon: Lock, text: "Changement de mot de passe", time: "Hier, 15:45" },
-                      { icon: Settings, text: "Paramètres de notification modifiés", time: "12/04/2025, 09:15" },
-                      { icon: Mail, text: "Email de confirmation envoyé", time: "10/04/2025, 14:22" },
-                      { icon: Calendar, text: "Planning des employés mis à jour", time: "08/04/2025, 16:50" },
-                    ].map((activity, index) => (
-                      <div key={index} className="flex gap-3">
-                        <div className="bg-primary/10 p-2 rounded-full h-10 w-10 flex items-center justify-center">
-                          <activity.icon size={18} className="text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{activity.text}</p>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Clock size={14} />
-                            {activity.time}
-                          </p>
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                        <Input 
+                          id="newPassword"
+                          name="newPassword"
+                          type="password"
+                          value={passwordForm.newPassword}
+                          onChange={handlePasswordFormChange}
+                          required
+                        />
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                        <Input 
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type="password"
+                          value={passwordForm.confirmPassword}
+                          onChange={handlePasswordFormChange}
+                          required
+                        />
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="submit">Changer le mot de passe</Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="preferences">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Préférences de notification</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-center py-8 text-muted-foreground">
+                      Fonctionnalité à venir
+                    </p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
         </main>
       </div>
     </div>

@@ -30,231 +30,127 @@ const initialEmployees = [
 ];
 
 const AdminEmployees = () => {
-  const navigate = useNavigate();
   const [employees, setEmployees] = useState(initialEmployees);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [newEmployee, setNewEmployee] = useState({
-    name: "",
-    role: "Serveur",
-    status: "Actif",
-  });
-  const [selectedEmployee, setSelectedEmployee] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<"view" | "edit" | null>(null);
+  const [search, setSearch] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [roleFilter, setRoleFilter] = useState<string>("");
+  const navigate = useNavigate();
 
-  // Fonction pour déterminer la variante de badge en fonction du statut
-  const getBadgeVariant = (status: string) => {
-    switch (status) {
-      case "Actif":
-        return "default";
-      case "Congé":
-        return "secondary";
-      case "Inactif":
-        return "destructive";
-      default:
-        return "default";
-    }
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
   };
 
   const handleAddEmployee = () => {
-    if (!newEmployee.name) {
-      toast.error("Veuillez saisir un nom");
-      return;
-    }
+    setShowForm(true);
+  };
 
-    const currentDate = new Date();
-    const formattedDate = `${currentDate.getDate().toString().padStart(2, "0")}/${(currentDate.getMonth() + 1).toString().padStart(2, "0")}/${currentDate.getFullYear()}`;
-
-    const newEmployeeEntry = {
-      id: employees.length + 1,
-      name: newEmployee.name,
-      role: newEmployee.role,
-      status: newEmployee.status,
-      startDate: formattedDate,
-      lastActivity: "Aujourd'hui",
-    };
-
-    setEmployees([...employees, newEmployeeEntry]);
-    setNewEmployee({
-      name: "",
-      role: "Serveur",
-      status: "Actif",
-    });
-    setDialogOpen(false);
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     toast.success("Employé ajouté avec succès!");
-  };
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const filteredEmployees = employees.filter(employee => 
-    employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.role.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleViewEmployee = (id: number) => {
-    setSelectedEmployee(id);
-    setViewMode("view");
-    toast.info("Affichage des détails de l'employé");
-  };
-
-  const handleEditEmployee = (id: number) => {
-    setSelectedEmployee(id);
-    setViewMode("edit");
-    toast.info("Modification du statut de l'employé");
-  };
-
-  const handleChangeStatus = (id: number, newStatus: string) => {
-    setEmployees(employees.map(employee => 
-      employee.id === id ? {...employee, status: newStatus} : employee
-    ));
-    setSelectedEmployee(null);
-    setViewMode(null);
-    toast.success("Statut mis à jour avec succès!");
-  };
-
-  const handleDeleteEmployee = (id: number) => {
-    const updatedEmployees = employees.filter(employee => employee.id !== id);
-    setEmployees(updatedEmployees);
-    setSelectedEmployee(null);
-    setViewMode(null);
-    toast.success("Employé supprimé avec succès!");
+    setShowForm(false);
   };
 
   const handleBack = () => {
     navigate("/admin");
   };
 
-  const handleSort = () => {
-    const sortedEmployees = [...employees].sort((a, b) => a.name.localeCompare(b.name));
-    setEmployees(sortedEmployees);
-    toast.info("Liste triée par nom");
-  };
+  // Extracted unique statuses and roles for filtering
+  const uniqueStatuses = Array.from(new Set(initialEmployees.map(employee => employee.status)));
+  const uniqueRoles = Array.from(new Set(initialEmployees.map(employee => employee.role)));
+
+  // Apply filters and search
+  const filteredEmployees = employees.filter(employee => {
+    const matchesSearch = employee.name.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter ? employee.status === statusFilter : true;
+    const matchesRole = roleFilter ? employee.role === roleFilter : true;
+    
+    return matchesSearch && matchesStatus && matchesRole;
+  });
 
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="admin" />
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 
-              size="icon" 
+              className="p-2" 
               onClick={handleBack}
-              className="mr-2"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft size={20} />
             </Button>
             <h1 className="text-2xl font-bold">Gestion des Employés</h1>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="btn-primary flex items-center gap-2">
-                <Plus size={16} />
-                <span>Ajouter un employé</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Ajouter un nouvel employé</DialogTitle>
-                <DialogDescription>
-                  Veuillez remplir les informations ci-dessous pour ajouter un nouvel employé.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Nom
-                  </Label>
-                  <Input
-                    id="name"
-                    value={newEmployee.name}
-                    onChange={(e) => setNewEmployee({...newEmployee, name: e.target.value})}
-                    className="col-span-3"
-                    placeholder="Jean Dupont"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="role" className="text-right">
-                    Rôle
-                  </Label>
-                  <Select 
-                    value={newEmployee.role} 
-                    onValueChange={(value) => setNewEmployee({...newEmployee, role: value})}
-                  >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Sélectionner un rôle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Chef de cuisine">Chef de cuisine</SelectItem>
-                      <SelectItem value="Serveur">Serveur</SelectItem>
-                      <SelectItem value="Barman">Barman</SelectItem>
-                      <SelectItem value="Commis">Commis</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="status" className="text-right">
-                    Statut
-                  </Label>
-                  <Select 
-                    value={newEmployee.status} 
-                    onValueChange={(value) => setNewEmployee({...newEmployee, status: value})}
-                  >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Sélectionner un statut" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Actif">Actif</SelectItem>
-                      <SelectItem value="Congé">Congé</SelectItem>
-                      <SelectItem value="Inactif">Inactif</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                  Annuler
-                </Button>
-                <Button onClick={handleAddEmployee}>Ajouter</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={handleAddEmployee} className="flex items-center gap-2">
+            <Plus size={16} />
+            <span>Nouvel Employé</span>
+          </Button>
         </header>
+
         <main className="flex-1 overflow-y-auto p-6">
-          <Card className="mb-6">
-            <CardContent className="pt-6">
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Rechercher un employé..."
-                    className="pl-8 w-full"
-                    value={searchTerm}
-                    onChange={handleSearch}
-                  />
+          <div className="grid gap-6 mb-6">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex flex-wrap gap-4 items-end">
+                  <div className="flex-1">
+                    <Label htmlFor="search">Rechercher</Label>
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="search"
+                        type="search"
+                        placeholder="Rechercher un employé..."
+                        className="pl-8"
+                        value={search}
+                        onChange={handleSearch}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="w-full sm:w-auto">
+                    <Label htmlFor="status-filter">Filtrer par statut</Label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger id="status-filter" className="w-[180px]">
+                        <SelectValue placeholder="Tous les statuts" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Tous les statuts</SelectItem>
+                        {uniqueStatuses.map(status => (
+                          <SelectItem key={status} value={status}>{status}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="w-full sm:w-auto">
+                    <Label htmlFor="role-filter">Filtrer par rôle</Label>
+                    <Select value={roleFilter} onValueChange={setRoleFilter}>
+                      <SelectTrigger id="role-filter" className="w-[180px]">
+                        <SelectValue placeholder="Tous les rôles" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Tous les rôles</SelectItem>
+                        {uniqueRoles.map(role => (
+                          <SelectItem key={role} value={role}>{role}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <Button variant="outline" className="flex items-center gap-2" onClick={() => toast.info("Filtres appliqués")}>
-                  <Filter size={16} />
-                  <span>Filtrer</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="flex items-center gap-2"
-                  onClick={handleSort}
-                >
-                  <ArrowDownUp size={16} />
-                  <span>Trier</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle>Liste des employés</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Liste des Employés</CardTitle>
+                <div className="text-sm text-muted-foreground">
+                  {filteredEmployees.length} employé(s)
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
@@ -265,152 +161,100 @@ const AdminEmployees = () => {
                     <TableHead>Statut</TableHead>
                     <TableHead>Date d'embauche</TableHead>
                     <TableHead>Dernière activité</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredEmployees.map((employee) => (
-                    <TableRow key={employee.id}>
-                      <TableCell className="font-medium flex items-center gap-2">
-                        <div className="bg-gray-100 p-2 rounded-full">
-                          <User size={16} />
-                        </div>
-                        {employee.name}
-                      </TableCell>
-                      <TableCell>{employee.role}</TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant={getBadgeVariant(employee.status)}
-                        >
-                          {employee.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{employee.startDate}</TableCell>
-                      <TableCell>{employee.lastActivity}</TableCell>
-                      <TableCell className="text-right">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleViewEmployee(employee.id)}
-                        >
-                          Voir
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditEmployee(employee.id)}
-                        >
-                          Éditer
-                        </Button>
+                  {filteredEmployees.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-4">
+                        Aucun employé trouvé
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    filteredEmployees.map((employee) => (
+                      <TableRow key={employee.id}>
+                        <TableCell className="font-medium flex items-center gap-2">
+                          <User size={20} className="text-muted-foreground" />
+                          {employee.name}
+                        </TableCell>
+                        <TableCell>{employee.role}</TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            employee.status === "Actif" ? "default" : 
+                            employee.status === "Congé" ? "secondary" : "outline"
+                          }>
+                            {employee.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{employee.startDate}</TableCell>
+                        <TableCell>{employee.lastActivity}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => toast.info(`Voir profil: ${employee.name}`)}>
+                              Voir
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => toast.info(`Modifier: ${employee.name}`)}>
+                              Modifier
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
-
-          <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              Affichage de {filteredEmployees.length} employés sur {employees.length} au total
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" disabled>Précédent</Button>
-              <Button variant="outline" size="sm">Suivant</Button>
-            </div>
-          </div>
         </main>
       </div>
 
-      {/* Dialog for viewing and editing employee */}
-      {selectedEmployee && viewMode && (
-        <Dialog open={true} onOpenChange={() => {
-          setSelectedEmployee(null);
-          setViewMode(null);
-        }}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {viewMode === "view" ? "Détails de l'employé" : "Modifier l'employé"}
-              </DialogTitle>
-            </DialogHeader>
-            {viewMode === "view" ? (
-              <div className="space-y-4">
-                {employees.filter(e => e.id === selectedEmployee).map(employee => (
-                  <div key={employee.id} className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Nom:</span>
-                      <span>{employee.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Rôle:</span>
-                      <span>{employee.role}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Statut:</span>
-                      <Badge variant={getBadgeVariant(employee.status)}>{employee.status}</Badge>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Date d'embauche:</span>
-                      <span>{employee.startDate}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Dernière activité:</span>
-                      <span>{employee.lastActivity}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {employees.filter(e => e.id === selectedEmployee).map(employee => (
-                  <div key={employee.id} className="space-y-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="edit-status" className="text-right">
-                        Statut
-                      </Label>
-                      <Select 
-                        defaultValue={employee.status} 
-                        onValueChange={(value) => handleChangeStatus(employee.id, value)}
-                      >
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Sélectionner un statut" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Actif">Actif</SelectItem>
-                          <SelectItem value="Congé">Congé</SelectItem>
-                          <SelectItem value="Inactif">Inactif</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex justify-end">
-                      <Button 
-                        variant="destructive" 
-                        onClick={() => handleDeleteEmployee(employee.id)}
-                      >
-                        Supprimer l'employé
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ajouter un nouvel employé</DialogTitle>
+            <DialogDescription>
+              Remplissez le formulaire ci-dessous pour ajouter un nouvel employé.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleFormSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nom complet</Label>
+              <Input id="name" placeholder="Jean Dupont" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="role">Rôle</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un rôle" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="chef">Chef de cuisine</SelectItem>
+                  <SelectItem value="serveur">Serveur</SelectItem>
+                  <SelectItem value="barman">Barman</SelectItem>
+                  <SelectItem value="commis">Commis</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="status">Statut</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="actif">Actif</SelectItem>
+                  <SelectItem value="conge">Congé</SelectItem>
+                  <SelectItem value="inactif">Inactif</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setSelectedEmployee(null);
-                setViewMode(null);
-              }}>
-                Fermer
-              </Button>
-              {viewMode === "view" && (
-                <Button onClick={() => setViewMode("edit")}>
-                  Modifier
-                </Button>
-              )}
+              <Button type="submit">Ajouter l'employé</Button>
             </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
