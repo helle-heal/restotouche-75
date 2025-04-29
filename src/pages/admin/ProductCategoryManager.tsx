@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,27 @@ const ProductCategoryManager = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Load data from localStorage if available
+  useEffect(() => {
+    const storedProducts = localStorage.getItem('productsList');
+    if (storedProducts) {
+      try {
+        setProductsList(JSON.parse(storedProducts));
+      } catch (error) {
+        console.error("Error parsing stored products:", error);
+      }
+    }
+
+    const storedCategories = localStorage.getItem('categoryList');
+    if (storedCategories) {
+      try {
+        setCategoryList(JSON.parse(storedCategories));
+      } catch (error) {
+        console.error("Error parsing stored categories:", error);
+      }
+    }
+  }, []);
+
   // Category management functions
   const handleAddCategory = () => {
     if (newCategory.name.trim() === "" || newCategory.icon.trim() === "") {
@@ -56,7 +77,9 @@ const ProductCategoryManager = () => {
       icon: newCategory.icon,
     };
 
-    setCategoryList([...categoryList, category]);
+    const updatedCategories = [...categoryList, category];
+    setCategoryList(updatedCategories);
+    localStorage.setItem('categoryList', JSON.stringify(updatedCategories));
     setNewCategory({ name: "", icon: "" });
     setIsAddingCategory(false);
     
@@ -78,9 +101,26 @@ const ProductCategoryManager = () => {
       return;
     }
 
-    setCategoryList(categoryList.map(c => 
+    const updatedCategories = categoryList.map(c => 
       c.id === editingCategory.id ? editingCategory : c
-    ));
+    );
+    setCategoryList(updatedCategories);
+    localStorage.setItem('categoryList', JSON.stringify(updatedCategories));
+    
+    // Update category name in products
+    const updatedProducts = productsList.map(p => {
+      if (p.categoryId === editingCategory.id) {
+        return {
+          ...p,
+          categoryName: editingCategory.name
+        };
+      }
+      return p;
+    });
+    
+    setProductsList(updatedProducts);
+    localStorage.setItem('productsList', JSON.stringify(updatedProducts));
+    
     setEditingCategory(null);
     setIsEditingCategory(false);
     
@@ -111,7 +151,10 @@ const ProductCategoryManager = () => {
       return;
     }
     
-    setCategoryList(categoryList.filter(c => c.id !== categoryToDelete));
+    const updatedCategories = categoryList.filter(c => c.id !== categoryToDelete);
+    setCategoryList(updatedCategories);
+    localStorage.setItem('categoryList', JSON.stringify(updatedCategories));
+    
     setIsDeleteDialogOpen(false);
     setCategoryToDelete(null);
     
@@ -134,7 +177,10 @@ const ProductCategoryManager = () => {
   const handleDeleteProduct = () => {
     if (productToDelete === null) return;
     
-    setProductsList(productsList.filter(p => p.id !== productToDelete));
+    const updatedProducts = productsList.filter(p => p.id !== productToDelete);
+    setProductsList(updatedProducts);
+    localStorage.setItem('productsList', JSON.stringify(updatedProducts));
+    
     setIsDeleteDialogOpen(false);
     setProductToDelete(null);
     

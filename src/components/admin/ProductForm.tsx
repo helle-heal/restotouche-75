@@ -82,12 +82,10 @@ const ProductForm = ({ categories, onSubmit, product }: ProductFormProps) => {
     };
 
     onSubmit(productData);
-    form.reset();
-    setImagePreview(null);
-    toast({
-      title: "Produit sauvegardé",
-      description: "Le produit a été sauvegardé avec succès.",
-    });
+    if (!product) {
+      form.reset();
+      setImagePreview(null);
+    }
   };
 
   return (
@@ -207,7 +205,7 @@ const ProductForm = ({ categories, onSubmit, product }: ProductFormProps) => {
         </Card>
 
         <div className="flex justify-end gap-4">
-          <Button type="submit">Sauvegarder le produit</Button>
+          <Button type="submit">{product ? "Mettre à jour" : "Sauvegarder"} le produit</Button>
         </div>
       </form>
     </Form>
