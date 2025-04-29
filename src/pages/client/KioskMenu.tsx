@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import QRCode from "@/components/client/QRCode";
 import PaymentModal from "@/components/client/PaymentModal";
-import { QrCode } from "lucide-react";
+import { QrCode, ArrowRight } from "lucide-react";
 import Logo from "@/components/layout/Logo";
 
 const KioskMenu = () => {
@@ -115,15 +115,19 @@ const KioskMenu = () => {
       <div className="bg-white p-4 shadow-sm">
         <div className="container mx-auto flex justify-between items-center">
           <Logo />
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={() => setShowQRCode(true)}
-            className="rounded-full"
-            aria-label="Afficher le code QR"
-          >
-            <QrCode className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <span className="text-sm hidden sm:inline text-muted-foreground">Scanner le menu</span>
+            <ArrowRight className="h-4 w-4 hidden sm:inline text-muted-foreground" />
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => setShowQRCode(true)}
+              className="rounded-full"
+              aria-label="Afficher le code QR"
+            >
+              <QrCode className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
