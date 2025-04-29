@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,6 +50,16 @@ const App = () => (
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/product-category" element={<ProductCategoryManager />} />
+          
+          {/* Employee routes */}
+          <Route path="/employee" element={<EmployeeDashboard />} />
+          <Route path="/employee/attendance" element={<EmployeeAttendance />} />
+          <Route path="/employee/tasks" element={<EmployeeTasks />} />
+          <Route path="/employee/orders" element={<EmployeeOrders />} />
+          <Route path="/employee/claims" element={<EmployeeClaims />} />
+          <Route path="/employee/messages" element={<EmployeeMessages />} />
+          <Route path="/employee/profile" element={<EmployeeProfile />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
