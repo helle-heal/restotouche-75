@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,10 +11,25 @@ import {
   AlertCircle,
   Calendar,
   Users,
+  ArrowLeft
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const tasks = [
+const initialTasks = [
   {
     id: 1,
     title: "Inventaire cuisine",
@@ -58,16 +73,182 @@ const tasks = [
 ];
 
 const AdminTasks = () => {
+  const navigate = useNavigate();
+  const [tasks, setTasks] = useState(initialTasks);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("all");
+  const [selectedTask, setSelectedTask] = useState<number | null>(null);
+  const [newTask, setNewTask] = useState({
+    title: "",
+    priority: "medium",
+    assignee: "Non assigné",
+    dueDate: "",
+  });
+
+  const handleBack = () => {
+    navigate("/admin");
+  };
+
+  const handleAddTask = () => {
+    if (!newTask.title) {
+      toast.error("Veuillez saisir un titre pour la tâche");
+      return;
+    }
+
+    const newTaskEntry = {
+      id: tasks.length + 1,
+      title: newTask.title,
+      status: "pending",
+      assignee: newTask.assignee,
+      dueDate: newTask.dueDate || "Non définie",
+      priority: newTask.priority as "low" | "medium" | "high",
+    };
+
+    setTasks([...tasks, newTaskEntry]);
+    setNewTask({
+      title: "",
+      priority: "medium",
+      assignee: "Non assigné",
+      dueDate: "",
+    });
+    setDialogOpen(false);
+    toast.success("Nouvelle tâche créée avec succès!");
+  };
+
+  const handleMarkCompleted = (taskId: number) => {
+    const updatedTasks = tasks.map(task => 
+      task.id === taskId ? {...task, status: "completed"} : task
+    );
+    setTasks(updatedTasks);
+    toast.success("Tâche marquée comme terminée!");
+  };
+
+  const handleAssignToEmployee = (taskId: number, employeeName: string) => {
+    const updatedTasks = tasks.map(task =>
+      task.id === taskId ? {...task, assignee: employeeName} : task
+    );
+    setTasks(updatedTasks);
+    toast.success(`Tâche assignée à ${employeeName}`);
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
+  const getPendingTasksCount = () => {
+    return tasks.filter(t => t.status === "pending").length;
+  };
+  
+  const getInProgressTasksCount = () => {
+    return tasks.filter(t => t.status === "in-progress").length;
+  };
+  
+  const getCompletedTasksCount = () => {
+    return tasks.filter(t => t.status === "completed").length;
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="admin" />
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Gestion des Tâches</h1>
-          <Button className="btn-primary flex items-center gap-2">
-            <Plus size={16} />
-            <span>Nouvelle tâche</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleBack}
+              className="mr-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-2xl font-bold">Gestion des Tâches</h1>
+          </div>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="btn-primary flex items-center gap-2">
+                <Plus size={16} />
+                <span>Nouvelle tâche</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Créer une nouvelle tâche</DialogTitle>
+                <DialogDescription>
+                  Veuillez remplir les informations ci-dessous pour créer une nouvelle tâche.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="title" className="text-right">
+                    Titre
+                  </Label>
+                  <Input
+                    id="title"
+                    value={newTask.title}
+                    onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                    className="col-span-3"
+                    placeholder="Ex: Nettoyage de la cuisine"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="priority" className="text-right">
+                    Priorité
+                  </Label>
+                  <Select 
+                    value={newTask.priority} 
+                    onValueChange={(value) => setNewTask({...newTask, priority: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Sélectionner une priorité" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">Haute</SelectItem>
+                      <SelectItem value="medium">Moyenne</SelectItem>
+                      <SelectItem value="low">Basse</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="assignee" className="text-right">
+                    Assigné à
+                  </Label>
+                  <Select 
+                    value={newTask.assignee} 
+                    onValueChange={(value) => setNewTask({...newTask, assignee: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Assigner à" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Jean Dupont">Jean Dupont</SelectItem>
+                      <SelectItem value="Marie Laurent">Marie Laurent</SelectItem>
+                      <SelectItem value="Thomas Petit">Thomas Petit</SelectItem>
+                      <SelectItem value="Sophie Martin">Sophie Martin</SelectItem>
+                      <SelectItem value="Non assigné">Non assigné</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="dueDate" className="text-right">
+                    Échéance
+                  </Label>
+                  <Input
+                    id="dueDate"
+                    type="date"
+                    value={newTask.dueDate}
+                    onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                  Annuler
+                </Button>
+                <Button onClick={handleAddTask}>Créer</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
           <div className="grid gap-6 mb-6 md:grid-cols-3">
@@ -79,9 +260,9 @@ const AdminTasks = () => {
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">8</div>
+                <div className="text-2xl font-bold">{getPendingTasksCount()}</div>
                 <p className="text-xs text-muted-foreground">
-                  3 tâches prioritaires
+                  {tasks.filter(t => t.status === "pending" && t.priority === "high").length} tâches prioritaires
                 </p>
               </CardContent>
             </Card>
@@ -93,9 +274,9 @@ const AdminTasks = () => {
                 <AlertCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">5</div>
+                <div className="text-2xl font-bold">{getInProgressTasksCount()}</div>
                 <p className="text-xs text-muted-foreground">
-                  2 en retard
+                  {tasks.filter(t => t.status === "in-progress" && t.priority === "high").length > 0 ? `${tasks.filter(t => t.status === "in-progress" && t.priority === "high").length} en retard` : 'Toutes dans les délais'}
                 </p>
               </CardContent>
             </Card>
@@ -107,7 +288,7 @@ const AdminTasks = () => {
                 <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">12</div>
+                <div className="text-2xl font-bold">{getCompletedTasksCount()}</div>
                 <p className="text-xs text-muted-foreground">
                   Cette semaine
                 </p>
@@ -115,7 +296,7 @@ const AdminTasks = () => {
             </Card>
           </div>
 
-          <Tabs defaultValue="all" className="w-full">
+          <Tabs defaultValue="all" className="w-full" value={activeTab} onValueChange={handleTabChange}>
             <TabsList className="mb-4">
               <TabsTrigger value="all">Toutes</TabsTrigger>
               <TabsTrigger value="pending">En attente</TabsTrigger>
@@ -159,10 +340,27 @@ const AdminTasks = () => {
                           </div>
                         </div>
                       </div>
-                      <div>
+                      <div className="flex gap-2">
+                        {task.status !== "completed" && task.assignee === "Non assigné" && (
+                          <Select 
+                            onValueChange={(value) => handleAssignToEmployee(task.id, value)}
+                          >
+                            <SelectTrigger className="w-40">
+                              <SelectValue placeholder="Assigner à" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Jean Dupont">Jean Dupont</SelectItem>
+                              <SelectItem value="Marie Laurent">Marie Laurent</SelectItem>
+                              <SelectItem value="Thomas Petit">Thomas Petit</SelectItem>
+                              <SelectItem value="Sophie Martin">Sophie Martin</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
                         <Button 
                           variant={task.status === "completed" ? "ghost" : "outline"} 
                           size="sm"
+                          disabled={task.status === "completed"}
+                          onClick={() => task.status !== "completed" && handleMarkCompleted(task.id)}
                         >
                           {task.status === "completed" ? "Terminé" : "Marquer terminé"}
                         </Button>
@@ -203,8 +401,27 @@ const AdminTasks = () => {
                           </div>
                         </div>
                       </div>
-                      <div>
-                        <Button variant="outline" size="sm">
+                      <div className="flex gap-2">
+                        {task.assignee === "Non assigné" && (
+                          <Select 
+                            onValueChange={(value) => handleAssignToEmployee(task.id, value)}
+                          >
+                            <SelectTrigger className="w-40">
+                              <SelectValue placeholder="Assigner à" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Jean Dupont">Jean Dupont</SelectItem>
+                              <SelectItem value="Marie Laurent">Marie Laurent</SelectItem>
+                              <SelectItem value="Thomas Petit">Thomas Petit</SelectItem>
+                              <SelectItem value="Sophie Martin">Sophie Martin</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleMarkCompleted(task.id)}
+                        >
                           Marquer terminé
                         </Button>
                       </div>
@@ -245,7 +462,11 @@ const AdminTasks = () => {
                         </div>
                       </div>
                       <div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleMarkCompleted(task.id)}
+                        >
                           Marquer terminé
                         </Button>
                       </div>
@@ -286,7 +507,7 @@ const AdminTasks = () => {
                         </div>
                       </div>
                       <div>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" disabled>
                           Terminé
                         </Button>
                       </div>

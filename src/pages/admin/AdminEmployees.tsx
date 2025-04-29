@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { User, Plus, Search, Filter, ArrowDownUp } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
+import { User, Plus, Search, Filter, ArrowDownUp, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
 
 const initialEmployees = [
   { id: 1, name: "Jean Dupont", role: "Chef de cuisine", status: "Actif", startDate: "15/03/2022", lastActivity: "Aujourd'hui" },
@@ -29,6 +30,7 @@ const initialEmployees = [
 ];
 
 const AdminEmployees = () => {
+  const navigate = useNavigate();
   const [employees, setEmployees] = useState(initialEmployees);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -94,11 +96,13 @@ const AdminEmployees = () => {
   const handleViewEmployee = (id: number) => {
     setSelectedEmployee(id);
     setViewMode("view");
+    toast.info("Affichage des détails de l'employé");
   };
 
   const handleEditEmployee = (id: number) => {
     setSelectedEmployee(id);
     setViewMode("edit");
+    toast.info("Modification du statut de l'employé");
   };
 
   const handleChangeStatus = (id: number, newStatus: string) => {
@@ -110,12 +114,40 @@ const AdminEmployees = () => {
     toast.success("Statut mis à jour avec succès!");
   };
 
+  const handleDeleteEmployee = (id: number) => {
+    const updatedEmployees = employees.filter(employee => employee.id !== id);
+    setEmployees(updatedEmployees);
+    setSelectedEmployee(null);
+    setViewMode(null);
+    toast.success("Employé supprimé avec succès!");
+  };
+
+  const handleBack = () => {
+    navigate("/admin");
+  };
+
+  const handleSort = () => {
+    const sortedEmployees = [...employees].sort((a, b) => a.name.localeCompare(b.name));
+    setEmployees(sortedEmployees);
+    toast.info("Liste triée par nom");
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="admin" />
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Gestion des Employés</h1>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleBack}
+              className="mr-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-2xl font-bold">Gestion des Employés</h1>
+          </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button className="btn-primary flex items-center gap-2">
@@ -211,11 +243,7 @@ const AdminEmployees = () => {
                 <Button 
                   variant="outline" 
                   className="flex items-center gap-2"
-                  onClick={() => {
-                    const sortedEmployees = [...employees].sort((a, b) => a.name.localeCompare(b.name));
-                    setEmployees(sortedEmployees);
-                    toast.info("Liste triée par nom");
-                  }}
+                  onClick={handleSort}
                 >
                   <ArrowDownUp size={16} />
                   <span>Trier</span>
@@ -354,6 +382,14 @@ const AdminEmployees = () => {
                           <SelectItem value="Inactif">Inactif</SelectItem>
                         </SelectContent>
                       </Select>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button 
+                        variant="destructive" 
+                        onClick={() => handleDeleteEmployee(employee.id)}
+                      >
+                        Supprimer l'employé
+                      </Button>
                     </div>
                   </div>
                 ))}

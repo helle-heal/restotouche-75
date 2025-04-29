@@ -4,8 +4,20 @@ import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, ShoppingCart, Clock, CreditCard, TrendingUp, Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
+  const handleNotifications = () => {
+    navigate("/admin/notifications");
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="admin" />
@@ -15,7 +27,7 @@ const AdminDashboard = () => {
         </header>
         <main className="flex-1 overflow-y-auto p-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
+            <Card className="cursor-pointer hover:shadow-md transition-all" onClick={() => handleNavigation("/admin/sales")}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
                   Total des ventes
@@ -29,7 +41,7 @@ const AdminDashboard = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="cursor-pointer hover:shadow-md transition-all" onClick={() => toast.info("Détails des commandes")}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
                   Commandes aujourd'hui
@@ -43,7 +55,7 @@ const AdminDashboard = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="cursor-pointer hover:shadow-md transition-all" onClick={() => handleNavigation("/admin/employees")}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
                   Employés présents
@@ -57,7 +69,7 @@ const AdminDashboard = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="cursor-pointer hover:shadow-md transition-all" onClick={() => handleNavigation("/admin/tasks")}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
                   Tâches en cours
@@ -71,7 +83,7 @@ const AdminDashboard = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="cursor-pointer hover:shadow-md transition-all" onClick={() => handleNavigation("/admin/sales")}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
                   Ticket moyen
@@ -85,7 +97,7 @@ const AdminDashboard = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="cursor-pointer hover:shadow-md transition-all" onClick={handleNotifications}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
                   Notifications
@@ -97,7 +109,10 @@ const AdminDashboard = () => {
                 <p className="text-xs text-muted-foreground">
                   3 nouvelles réclamations
                 </p>
-                <Button variant="outline" className="mt-4 w-full text-xs">
+                <Button variant="outline" className="mt-4 w-full text-xs" onClick={(e) => {
+                  e.stopPropagation();
+                  handleNavigation("/admin/notifications");
+                }}>
                   Voir toutes les notifications
                 </Button>
               </CardContent>
@@ -107,10 +122,18 @@ const AdminDashboard = () => {
           <div className="mt-6">
             <h2 className="text-lg font-bold mb-4">Actions rapides</h2>
             <div className="flex flex-wrap gap-4">
-              <Button className="btn-primary">Voir les ventes</Button>
-              <Button className="btn-secondary">Gérer les employés</Button>
-              <Button className="btn-secondary">Nouvelles tâches</Button>
-              <Button variant="outline">Réclamations</Button>
+              <Button className="btn-primary" onClick={() => handleNavigation("/admin/sales")}>
+                Voir les ventes
+              </Button>
+              <Button className="btn-secondary" onClick={() => handleNavigation("/admin/employees")}>
+                Gérer les employés
+              </Button>
+              <Button className="btn-secondary" onClick={() => handleNavigation("/admin/tasks")}>
+                Nouvelles tâches
+              </Button>
+              <Button variant="outline" onClick={() => handleNavigation("/admin/claims")}>
+                Réclamations
+              </Button>
             </div>
           </div>
         </main>
