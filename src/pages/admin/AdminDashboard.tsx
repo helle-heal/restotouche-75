@@ -1,10 +1,20 @@
-
 import React from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Package, Tag, Users, ClipboardList, BarChartBig, Bell, MessageSquare, ArrowUp, ArrowDown } from "lucide-react";
+import { 
+  Package, 
+  Tag, 
+  Users, 
+  ClipboardList, 
+  BarChartBig, 
+  Bell, 
+  MessageSquare, 
+  ArrowUp, 
+  ArrowDown,
+  ShoppingCart 
+} from "lucide-react";
 
 const AdminDashboard = () => {
   return (
