@@ -1,10 +1,12 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Bell, User, Calendar, Info } from "lucide-react";
+import { MessageSquare, Bell, User, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 // Types pour les messages
 interface Message {
@@ -19,6 +21,7 @@ interface Message {
 }
 
 const EmployeeMessages = () => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "MSG-001",
@@ -57,11 +60,25 @@ const EmployeeMessages = () => {
     setMessages(messages.map(msg => 
       msg.id === messageId ? { ...msg, isRead: true } : msg
     ));
+    toast.success("Message marqué comme lu");
   };
 
   // Marquer tous les messages comme lus
   const markAllAsRead = () => {
     setMessages(messages.map(msg => ({ ...msg, isRead: true })));
+    toast.success("Tous les messages ont été marqués comme lus");
+  };
+
+  // Navigation vers le tableau de bord
+  const handleBackToDashboard = () => {
+    navigate("/employee");
+    toast.info("Retour au tableau de bord");
+  };
+
+  // Navigation vers les réclamations
+  const navigateToClaims = () => {
+    navigate("/employee/claims");
+    toast.info("Navigation vers les réclamations");
   };
 
   // Formater la date
@@ -83,7 +100,7 @@ const EmployeeMessages = () => {
       case "response":
         return <MessageSquare className="h-5 w-5 text-blue-500" />;
       case "info":
-        return <Info className="h-5 w-5 text-green-500" />;
+        return <Bell className="h-5 w-5 text-green-500" />;
     }
   };
 
@@ -97,14 +114,26 @@ const EmployeeMessages = () => {
         <header className="bg-white shadow-sm px-6 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">Messages</h1>
-            {unreadMessages.length > 0 && (
-              <Button variant="outline" size="sm" onClick={markAllAsRead}>
-                Tout marquer comme lu
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleBackToDashboard}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Tableau de bord
               </Button>
-            )}
+              <Button onClick={navigateToClaims}>
+                Nouvelle réclamation
+              </Button>
+            </div>
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
+          {unreadMessages.length > 0 && (
+            <div className="mb-4 flex justify-end">
+              <Button variant="outline" size="sm" onClick={markAllAsRead}>
+                Tout marquer comme lu
+              </Button>
+            </div>
+          )}
+          
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full">
               <MessageSquare className="h-12 w-12 text-gray-300 mb-4" />

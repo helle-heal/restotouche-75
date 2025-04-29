@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,8 @@ import {
   MessageSquare, 
   Send, 
   RotateCw,
-  Clock
+  Clock,
+  ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,6 +36,7 @@ interface Claim {
 }
 
 const EmployeeClaims = () => {
+  const navigate = useNavigate();
   const [claims, setClaims] = useState<Claim[]>([
     {
       id: "REC-001",
@@ -93,6 +96,12 @@ const EmployeeClaims = () => {
     }, 1000);
   };
 
+  // Navigation vers le tableau de bord
+  const handleBackToDashboard = () => {
+    navigate("/employee");
+    toast.info("Retour au tableau de bord");
+  };
+
   // Formater la date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -136,7 +145,13 @@ const EmployeeClaims = () => {
       <Sidebar userType="employee" />
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm px-6 py-4">
-          <h1 className="text-2xl font-bold">Réclamations</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">Réclamations</h1>
+            <Button variant="outline" onClick={handleBackToDashboard}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Retour au tableau de bord
+            </Button>
+          </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
           <div className="grid gap-6 md:grid-cols-2">

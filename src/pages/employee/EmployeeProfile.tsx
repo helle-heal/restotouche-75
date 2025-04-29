@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/layout/Sidebar";
@@ -14,7 +13,8 @@ import {
   Clock, 
   Shield, 
   LogOut, 
-  Edit 
+  Edit,
+  ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -45,6 +45,12 @@ const EmployeeProfile = () => {
     }
   });
   
+  // Navigation vers le tableau de bord
+  const handleBackToDashboard = () => {
+    navigate("/employee");
+    toast.info("Retour au tableau de bord");
+  };
+
   // Fonction pour se déconnecter
   const handleLogout = () => {
     toast.info("Déconnexion en cours...");
@@ -52,13 +58,30 @@ const EmployeeProfile = () => {
       navigate("/login/employee");
     }, 1500);
   };
+  
+  // Fonction pour éditer le profil
+  const handleEdit = () => {
+    toast.info("Fonctionnalité d'édition en cours de développement");
+  };
+  
+  // Fonction pour consulter les pointages
+  const handleViewAttendance = () => {
+    navigate("/employee/attendance");
+    toast.info("Navigation vers les pointages");
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar userType="employee" />
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm px-6 py-4">
-          <h1 className="text-2xl font-bold">Mon Profil</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">Mon Profil</h1>
+            <Button variant="outline" onClick={handleBackToDashboard}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Retour au tableau de bord
+            </Button>
+          </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
           <div className="grid gap-6 md:grid-cols-3">
@@ -74,6 +97,7 @@ const EmployeeProfile = () => {
                         size="icon" 
                         className="absolute bottom-0 right-0 rounded-full" 
                         variant="outline"
+                        onClick={handleEdit}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -228,6 +252,14 @@ const EmployeeProfile = () => {
                       </div>
                     ))}
                   </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={handleViewAttendance}
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Voir tous les pointages
+                  </Button>
                 </CardContent>
               </Card>
             </div>

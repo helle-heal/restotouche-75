@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,6 +34,7 @@ interface Order {
 }
 
 const EmployeeOrders = () => {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([
     {
       id: "CMD-001",
@@ -87,12 +89,15 @@ const EmployeeOrders = () => {
         switch (order.status) {
           case "nouvelle":
             nextStatus = "en_préparation";
+            toast.success("Commande prise en charge");
             break;
           case "en_préparation":
             nextStatus = "prête";
+            toast.success("Commande marquée comme prête");
             break;
           case "prête":
             nextStatus = "livrée";
+            toast.success("Commande marquée comme livrée");
             break;
           default:
             break;
@@ -102,8 +107,6 @@ const EmployeeOrders = () => {
       }
       return order;
     }));
-    
-    toast.success("Statut de la commande mis à jour");
   };
 
   // Annuler une commande
@@ -119,6 +122,12 @@ const EmployeeOrders = () => {
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+  
+  // Navigation vers le tableau de bord
+  const handleBackToDashboard = () => {
+    navigate("/employee");
+    toast.info("Navigation vers le tableau de bord");
   };
 
   // Filtrer les commandes par statut
@@ -174,7 +183,12 @@ const EmployeeOrders = () => {
       <Sidebar userType="employee" />
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm px-6 py-4">
-          <h1 className="text-2xl font-bold">Commandes</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">Commandes</h1>
+            <Button variant="outline" onClick={handleBackToDashboard}>
+              Retour au tableau de bord
+            </Button>
+          </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
           <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
