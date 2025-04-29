@@ -1,7 +1,7 @@
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -9,6 +9,12 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Log current location to check routing
+  useEffect(() => {
+    console.log("Current admin location:", location.pathname);
+  }, [location]);
 
   return (
     <div className="flex h-screen bg-gray-50">

@@ -25,6 +25,7 @@ interface SidebarProps {
 const Sidebar = ({ userType }: SidebarProps) => {
   const location = useLocation();
   const pathname = location.pathname;
+  console.log("Current path:", pathname); // Logging current path for debugging
 
   const adminLinks = [
     { name: "Dashboard", path: "/admin", icon: Home },
@@ -67,6 +68,7 @@ const Sidebar = ({ userType }: SidebarProps) => {
                 ? "sidebar-item-active" 
                 : "text-primary-foreground hover:text-white"
             )}
+            onClick={() => console.log(`Navigating to: ${link.path}`)} // Add onClick for debugging
           >
             <link.icon size={20} className={pathname === link.path ? "text-white" : "text-primary"} />
             <span className={pathname === link.path ? "text-white font-medium" : "text-primary-foreground"}>{link.name}</span>
