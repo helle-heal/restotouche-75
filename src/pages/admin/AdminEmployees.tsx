@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -62,8 +61,8 @@ const AdminEmployees = () => {
   // Apply filters and search
   const filteredEmployees = employees.filter(employee => {
     const matchesSearch = employee.name.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter ? employee.status === statusFilter : true;
-    const matchesRole = roleFilter ? employee.role === roleFilter : true;
+    const matchesStatus = statusFilter === "all" || !statusFilter ? true : employee.status === statusFilter;
+    const matchesRole = roleFilter === "all" || !roleFilter ? true : employee.role === roleFilter;
     
     return matchesSearch && matchesStatus && matchesRole;
   });
