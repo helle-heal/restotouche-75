@@ -25,6 +25,7 @@ import EmployeeClaims from "./pages/employee/EmployeeClaims";
 import EmployeeMessages from "./pages/employee/EmployeeMessages";
 import EmployeeProfile from "./pages/employee/EmployeeProfile";
 import ProductCategoryManager from "./pages/admin/ProductCategoryManager";
+import AdminProducts from "./pages/admin/AdminProducts";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/admin/claims" element={<AdminClaims />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/product-category" element={<ProductCategoryManager />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
           
           {/* Employee routes */}
           <Route path="/employee" element={<EmployeeDashboard />} />
