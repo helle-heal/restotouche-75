@@ -116,7 +116,7 @@ const AdminEmployees = () => {
                         <SelectValue placeholder="Tous les statuts" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Tous les statuts</SelectItem>
+                        <SelectItem value="all">Tous les statuts</SelectItem>
                         {uniqueStatuses.map(status => (
                           <SelectItem key={status} value={status}>{status}</SelectItem>
                         ))}
@@ -131,7 +131,7 @@ const AdminEmployees = () => {
                         <SelectValue placeholder="Tous les rôles" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Tous les rôles</SelectItem>
+                        <SelectItem value="all">Tous les rôles</SelectItem>
                         {uniqueRoles.map(role => (
                           <SelectItem key={role} value={role}>{role}</SelectItem>
                         ))}
