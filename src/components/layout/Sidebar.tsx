@@ -14,7 +14,6 @@ import {
   User,
   Clock,
   ShoppingCart,
-  Package,
   Tag,
 } from "lucide-react";
 
@@ -32,8 +31,7 @@ const Sidebar = ({ userType }: SidebarProps) => {
     { name: "Employés", path: "/admin/employees", icon: Users },
     { name: "Tâches", path: "/admin/tasks", icon: ClipboardList },
     { name: "Ventes", path: "/admin/sales", icon: BarChartBig },
-    { name: "Produits", path: "/admin/products", icon: Package },
-    { name: "Catégories", path: "/admin/product-category", icon: Tag },
+    { name: "Catégories et Produits", path: "/admin/product-category", icon: Tag },
     { name: "Notifications", path: "/admin/notifications", icon: Bell },
     { name: "Réclamations", path: "/admin/claims", icon: MessageSquare },
     { name: "Profil", path: "/admin/profile", icon: User },
