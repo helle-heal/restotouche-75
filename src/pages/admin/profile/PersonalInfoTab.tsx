@@ -12,6 +12,7 @@ interface PersonalInfoTabProps {
     lastName: string;
     email: string;
     phone: string;
+    role: string;
   };
   setProfileInfo: React.Dispatch<React.SetStateAction<{
     firstName: string;
@@ -37,7 +38,10 @@ const PersonalInfoTab = ({ profileInfo, setProfileInfo, handleProfileUpdate }: P
               <Input 
                 id="firstName"
                 value={profileInfo.firstName}
-                onChange={(e) => setProfileInfo({...profileInfo, firstName: e.target.value})}
+                onChange={(e) => setProfileInfo({
+                  ...profileInfo,
+                  firstName: e.target.value
+                })}
               />
             </div>
             <div className="space-y-2">
@@ -45,7 +49,10 @@ const PersonalInfoTab = ({ profileInfo, setProfileInfo, handleProfileUpdate }: P
               <Input 
                 id="lastName"
                 value={profileInfo.lastName}
-                onChange={(e) => setProfileInfo({...profileInfo, lastName: e.target.value})}
+                onChange={(e) => setProfileInfo({
+                  ...profileInfo,
+                  lastName: e.target.value
+                })}
               />
             </div>
           </div>
@@ -58,7 +65,10 @@ const PersonalInfoTab = ({ profileInfo, setProfileInfo, handleProfileUpdate }: P
                 type="email"
                 className="pl-9"
                 value={profileInfo.email}
-                onChange={(e) => setProfileInfo({...profileInfo, email: e.target.value})}
+                onChange={(e) => setProfileInfo({
+                  ...profileInfo,
+                  email: e.target.value
+                })}
               />
             </div>
           </div>
@@ -67,7 +77,10 @@ const PersonalInfoTab = ({ profileInfo, setProfileInfo, handleProfileUpdate }: P
             <Input 
               id="phone"
               value={profileInfo.phone}
-              onChange={(e) => setProfileInfo({...profileInfo, phone: e.target.value})}
+              onChange={(e) => setProfileInfo({
+                ...profileInfo,
+                phone: e.target.value
+              })}
             />
           </div>
           <div className="flex justify-end">
