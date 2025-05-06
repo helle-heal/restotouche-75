@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import EmailForm from "@/components/client/EmailForm";
 import Categories from "@/components/client/Categories";
@@ -34,51 +33,39 @@ const KioskMenu = () => {
     setSelectedCategory(categoryId);
   };
 
-  const handleAddToCart = (productId: number) => {
-    const product = allProductsList.find((p) => p.id === productId);
-    if (!product) return;
+  const handleAddToCart = (product: CartItem) => {
+    // Vérifier si le produit avec les mêmes options existe déjà dans le panier
+    const existingItemIndex = cartItems.findIndex((item) => item.uniqueId === product.uniqueId);
 
-    const existingItem = cartItems.find((item) => item.id === productId);
-
-    if (existingItem) {
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-      toast.success(`${product.name} ajouté (${existingItem.quantity + 1})`);
+    if (existingItemIndex !== -1) {
+      // Si le produit existe, mettre à jour sa quantité
+      const updatedCartItems = [...cartItems];
+      updatedCartItems[existingItemIndex].quantity += product.quantity;
+      setCartItems(updatedCartItems);
+      toast.success(`${product.name} ajouté (${updatedCartItems[existingItemIndex].quantity})`);
     } else {
-      setCartItems([
-        ...cartItems,
-        {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          quantity: 1,
-        },
-      ]);
+      // Sinon, ajouter le nouveau produit au panier
+      setCartItems([...cartItems, product]);
       toast.success(`${product.name} ajouté au panier`);
     }
   };
 
-  const handleQuantityChange = (id: number, quantity: number) => {
+  const handleQuantityChange = (uniqueId: string, quantity: number) => {
     if (quantity <= 0) {
-      handleRemoveItem(id);
+      handleRemoveItem(uniqueId);
       return;
     }
     setCartItems(
       cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: quantity } : item
+        item.uniqueId === uniqueId ? { ...item, quantity: quantity } : item
       )
     );
   };
 
-  const handleRemoveItem = (id: number) => {
-    const itemToRemove = cartItems.find((item) => item.id === id);
+  const handleRemoveItem = (uniqueId: string) => {
+    const itemToRemove = cartItems.find((item) => item.uniqueId === uniqueId);
     if (itemToRemove) {
-      setCartItems(cartItems.filter((item) => item.id !== id));
+      setCartItems(cartItems.filter((item) => item.uniqueId !== uniqueId));
       toast.info(`${itemToRemove.name} retiré du panier`);
     }
   };

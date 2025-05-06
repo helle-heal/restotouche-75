@@ -5,18 +5,25 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Trash2, Minus, Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-// Types pour le panier
+// Types pour le panier avec options
 export interface CartItem {
   id: number;
   name: string;
   price: number;
   quantity: number;
+  options?: {
+    size?: string;
+    cheese?: string[];
+    extras?: string[];
+    specialInstructions?: string;
+  };
+  uniqueId?: string; // Identifiant unique pour différencier les produits avec options différentes
 }
 
 interface CartProps {
   items: CartItem[];
-  onQuantityChange: (id: number, quantity: number) => void;
-  onRemoveItem: (id: number) => void;
+  onQuantityChange: (uniqueId: string, quantity: number) => void;
+  onRemoveItem: (uniqueId: string) => void;
   onCheckout: () => void;
 }
 
@@ -26,6 +33,39 @@ const Cart = ({ items, onQuantityChange, onRemoveItem, onCheckout }: CartProps) 
     (total, item) => total + item.price * item.quantity,
     0
   );
+
+  // Fonction pour afficher les options du produit
+  const displayOptions = (item: CartItem) => {
+    if (!item.options) return null;
+    
+    const options = [];
+    
+    if (item.options.size && item.options.size !== "simple") {
+      options.push(`Taille: ${item.options.size}`);
+    }
+    
+    if (item.options.cheese && item.options.cheese.length > 0) {
+      options.push(`Fromage: ${item.options.cheese.join(', ')}`);
+    }
+    
+    if (item.options.extras && item.options.extras.length > 0) {
+      options.push(`Extras: ${item.options.extras.join(', ')}`);
+    }
+    
+    if (item.options.specialInstructions) {
+      options.push(`Note: ${item.options.specialInstructions}`);
+    }
+    
+    if (options.length === 0) return null;
+    
+    return (
+      <div className="text-xs text-muted-foreground mt-1">
+        {options.map((option, index) => (
+          <div key={index}>{option}</div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <Card className="animate-fade-in">
@@ -46,19 +86,20 @@ const Cart = ({ items, onQuantityChange, onRemoveItem, onCheckout }: CartProps) 
         ) : (
           <div className="space-y-3">
             {items.map((item) => (
-              <div key={item.id} className="flex justify-between items-center">
+              <div key={item.uniqueId} className="flex justify-between items-start">
                 <div className="flex-1">
                   <p className="font-medium">{item.name}</p>
                   <p className="text-sm text-muted-foreground">
                     {item.price.toFixed(2)} €
                   </p>
+                  {displayOptions(item)}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="icon"
                     className="h-7 w-7"
-                    onClick={() => onQuantityChange(item.id, item.quantity - 1)}
+                    onClick={() => onQuantityChange(item.uniqueId || `${item.id}`, item.quantity - 1)}
                     disabled={item.quantity <= 1}
                   >
                     <Minus className="h-3 w-3" />
@@ -68,7 +109,7 @@ const Cart = ({ items, onQuantityChange, onRemoveItem, onCheckout }: CartProps) 
                     variant="outline"
                     size="icon"
                     className="h-7 w-7"
-                    onClick={() => onQuantityChange(item.id, item.quantity + 1)}
+                    onClick={() => onQuantityChange(item.uniqueId || `${item.id}`, item.quantity + 1)}
                   >
                     <Plus className="h-3 w-3" />
                   </Button>
@@ -76,7 +117,7 @@ const Cart = ({ items, onQuantityChange, onRemoveItem, onCheckout }: CartProps) 
                     variant="ghost"
                     size="icon"
                     className="h-7 w-7 text-red-500"
-                    onClick={() => onRemoveItem(item.id)}
+                    onClick={() => onRemoveItem(item.uniqueId || `${item.id}`)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

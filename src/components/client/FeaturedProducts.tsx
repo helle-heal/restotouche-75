@@ -6,9 +6,18 @@ import { Eye } from "lucide-react";
 import { allProductsList, popularProducts } from "@/data";
 import { ProductData } from "@/types/menu";
 import ProductDetails from "./ProductDetails";
+import { CartItem } from "./Cart";
+
+interface ProductOptions {
+  size: "simple" | "double";
+  cheese: string[];
+  extras: string[];
+  specialInstructions: string;
+  quantity: number;
+}
 
 interface FeaturedProductsProps {
-  onAddToCart: (productId: number) => void;
+  onAddToCart: (product: CartItem) => void;
   categoryId?: number | null;
   filteredProducts?: number[];
 }
@@ -31,8 +40,68 @@ const FeaturedProducts = ({ onAddToCart, categoryId, filteredProducts }: Feature
     ? allProductsList.find(p => p.categoryId === categoryId)?.categoryName || "Produits" 
     : "Recommandations";
 
-  const handleAddToCart = (productId: number, options: any) => {
-    onAddToCart(productId);
+  // Fonction pour créer un identifiant unique basé sur le produit et ses options
+  const createUniqueId = (productId: number, options: ProductOptions) => {
+    const optionsString = JSON.stringify({
+      size: options.size,
+      cheese: options.cheese.sort(),
+      extras: options.extras.sort(),
+      specialInstructions: options.specialInstructions
+    });
+    
+    return `${productId}-${optionsString}`;
+  };
+
+  const handleAddToCart = (productId: number, options: ProductOptions) => {
+    const product = allProductsList.find(p => p.id === productId);
+    if (!product) return;
+
+    // Calculer le prix total avec les options
+    let totalPrice = product.price;
+    
+    // Ajustement du prix selon la taille
+    if (options.size === "double") {
+      totalPrice += 30;
+    }
+    
+    // Ajout du prix des fromages (10 DH par fromage)
+    totalPrice += options.cheese.length * 10;
+    
+    // Ajout du prix des extras
+    options.extras.forEach(extra => {
+      switch (extra) {
+        case "bacon":
+          totalPrice += 15;
+          break;
+        case "egg":
+          totalPrice += 10;
+          break;
+        case "avocado":
+          totalPrice += 20;
+          break;
+      }
+    });
+
+    // Créer un identifiant unique
+    const uniqueId = createUniqueId(productId, options);
+
+    // Créer l'objet du produit à ajouter au panier
+    const cartItem: CartItem = {
+      id: productId,
+      name: product.name,
+      price: totalPrice,
+      quantity: options.quantity,
+      options: {
+        size: options.size,
+        cheese: options.cheese,
+        extras: options.extras,
+        specialInstructions: options.specialInstructions
+      },
+      uniqueId: uniqueId
+    };
+
+    // Ajouter au panier avec les options
+    onAddToCart(cartItem);
   };
 
   return (
