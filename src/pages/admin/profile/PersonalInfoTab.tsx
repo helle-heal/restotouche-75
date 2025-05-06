@@ -5,22 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
+import { ProfileInfo } from "@/hooks/useProfileData";
 
 interface PersonalInfoTabProps {
-  profileInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    role: string;
-  };
-  setProfileInfo: React.Dispatch<React.SetStateAction<{
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    role: string;
-  }>>;
+  profileInfo: ProfileInfo;
+  setProfileInfo: React.Dispatch<React.SetStateAction<ProfileInfo>>;
   handleProfileUpdate: (e: React.FormEvent) => void;
 }
 

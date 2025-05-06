@@ -5,13 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Key } from "lucide-react";
+import { PasswordForm } from "@/hooks/useProfileData";
 
 interface SecurityTabProps {
-  passwordForm: {
-    currentPassword: string;
-    newPassword: string;
-    confirmPassword: string;
-  };
+  passwordForm: PasswordForm;
   handlePasswordFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handlePasswordChange: (e: React.FormEvent) => void;
 }

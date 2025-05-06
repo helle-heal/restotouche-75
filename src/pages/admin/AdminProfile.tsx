@@ -1,62 +1,27 @@
 
-import React, { useState } from "react";
+import React from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { User, Key, Settings } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "@/components/ui/sonner";
 
 // Import components
 import ProfileHeader from "./profile/ProfileHeader";
 import PersonalInfoTab from "./profile/PersonalInfoTab";
 import SecurityTab from "./profile/SecurityTab";
 import PreferencesTab from "./profile/PreferencesTab";
+import { useProfileData } from "@/hooks/useProfileData";
 
 const AdminProfile = () => {
-  const [profileImage, setProfileImage] = useState("/avatar.png");
-  
-  // Information du profil
-  const [profileInfo, setProfileInfo] = useState({
-    firstName: "Admin",
-    lastName: "Restouch",
-    email: "admin@restouch.com",
-    phone: "+212 5 22 33 44 55",
-    role: "Administrateur"
-  });
-
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
-  });
-
-  const handleProfileUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Profil mis à jour avec succès");
-  };
-
-  const handlePasswordChange = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
-      return;
-    }
-    
-    toast.success("Mot de passe modifié avec succès");
-    setPasswordForm({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: ""
-    });
-  };
-
-  const handlePasswordFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordForm({
-      ...passwordForm,
-      [e.target.name]: e.target.value
-    });
-  };
+  const {
+    profileImage,
+    profileInfo,
+    setProfileInfo,
+    passwordForm,
+    handlePasswordFormChange,
+    handleProfileUpdate,
+    handlePasswordChange,
+  } = useProfileData();
 
   return (
     <AdminLayout>
